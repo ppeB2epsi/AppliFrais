@@ -67,9 +67,9 @@
       </div>
       <div class="piedForm">
       <p>
-        <input id="ok" type="submit" value="Valider" size="20"
+        <input id="ok" name="ok" type="submit" value="Valider" size="20"
                title="Demandez à consulter cette fiche de frais" />
-        <input id="annuler" type="reset" value="Effacer" size="20" />
+        <input id="annuler" name="annuler" type="reset" value="Effacer" size="20" />
       </p> 
       </div>
         
