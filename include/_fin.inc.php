@@ -4,5 +4,5 @@
  * @package default
  * @todo  RAS
  */
-    deconnecterServeurBD($idConnexion);
+    $bdd->deconnecterServeurBD();
 ?>

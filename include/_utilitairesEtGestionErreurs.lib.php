@@ -199,7 +199,7 @@ function ajouterErreur(&$tabErr,$msg) {
  * @param array $tabErr tableau des messages d'erreurs  
  * @return int nombre de messages d'erreurs
  */ 
-function obtenirNbErreurs($tabErr) {
+function nbErreurs($tabErr) {
     return count($tabErr);
 }
  
