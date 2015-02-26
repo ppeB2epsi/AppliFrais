@@ -10,7 +10,8 @@
  *
  * @return void
  */
-function initSession() {
+function initSession()
+{
     session_start();
 }
 
@@ -20,9 +21,11 @@ function initSession() {
  * Retourne l'id du visiteur connecté, une chaîne vide si pas de visiteur connecté.
  * @return string id du visiteur connecté
  */
-function obtenirIdUserConnecte() {
+function obtenirIdUserConnecte()
+{
     $ident="";
-    if ( isset($_SESSION["loginUser"]) ) {
+    if ( isset($_SESSION["loginUser"]) )
+    {
         $ident = (isset($_SESSION["idUser"])) ? $_SESSION["idUser"] : '';   
     }  
     return $ident ;
@@ -36,7 +39,8 @@ function obtenirIdUserConnecte() {
  * @param string login du visiteur
  * @return void    
  */
-function affecterInfosConnecte($id, $login) {
+function affecterInfosConnecte($id, $login)
+{
     $_SESSION["idUser"] = $id;
     $_SESSION["loginUser"] = $login;
 }
@@ -46,7 +50,8 @@ function affecterInfosConnecte($id, $login) {
  *
  * @return void
  */
-function deconnecterVisiteur() {
+function deconnecterVisiteur()
+{
     unset($_SESSION["idUser"]);
     unset($_SESSION["loginUser"]);
 }
@@ -57,7 +62,8 @@ function deconnecterVisiteur() {
  * Retourne true si un visiteur s'est identifié sur le site, false sinon. 
  * @return boolean échec ou succès
  */
-function estVisiteurConnecte() {
+function estVisiteurConnecte()
+{
     // actuellement il n'y a que les visiteurs qui se connectent
     return isset($_SESSION["loginUser"]);
 }

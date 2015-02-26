@@ -8,7 +8,8 @@
   require($repInclude . "_init.inc.php");
 
   // page inaccessible si visiteur non connecté
-  if ( ! estVisiteurConnecte() ) {
+  if ( ! estVisiteurConnecte() )
+  {
       header("Location: cSeConnecter.php");  
   }
   require($repInclude . "_entete.inc.html");
@@ -18,19 +19,23 @@
   $moisSaisi=lireDonneePost("lstMois", "");
   $etape=lireDonneePost("etape",""); 
 
-  if ($etape != "demanderConsult" && $etape != "validerConsult") {
+  if ($etape != "demanderConsult" && $etape != "validerConsult")
+  {
       // si autre valeur, on considère que c'est le début du traitement
       $etape = "demanderConsult";        
   } 
-  if ($etape == "validerConsult") { // l'utilisateur valide ses nouvelles données
+  if ($etape == "validerConsult")
+  { // l'utilisateur valide ses nouvelles données
                 
       // vérification de l'existence de la fiche de frais pour le mois demandé
       $existeFicheFrais = existeFicheFrais($idConnexion, $moisSaisi, obtenirIdUserConnecte());
       // si elle n'existe pas, on la crée avec les élets frais forfaitisés à 0
-      if ( !$existeFicheFrais ) {
+      if ( !$existeFicheFrais )
+      {
           ajouterErreur($tabErreurs, "Le mois demandé est invalide");
       }
-      else {
+      else
+      {
           // récupération des données sur la fiche de frais demandée
           $tabFicheFrais = obtenirDetailFicheFrais($idConnexion, $moisSaisi, obtenirIdUserConnecte());
       }
@@ -51,7 +56,8 @@
                 $req = obtenirReqMoisFicheFrais(obtenirIdUserConnecte());
                 $idJeuMois = mysql_query($req, $idConnexion);
                 $lgMois = mysql_fetch_assoc($idJeuMois);
-                while ( is_array($lgMois) ) {
+                while ( is_array($lgMois) )
+                {
                     $mois = $lgMois["mois"];
                     $noMois = intval(substr($mois, 4, 2));
                     $annee = intval(substr($mois, 0, 4));
@@ -103,7 +109,8 @@
             // car chacune des lignes du jeu d'enregistrements doit être doit être
             // affichée au sein d'une colonne du tableau HTML
             $tabEltsFraisForfait = array();
-            while ( is_array($lgEltForfait) ) {
+            while ( is_array($lgEltForfait) )
+            {
                 $tabEltsFraisForfait[$lgEltForfait["libelle"]] = $lgEltForfait["quantite"];
                 $lgEltForfait = mysql_fetch_assoc($idJeuEltsFraisForfait);
             }
@@ -115,7 +122,8 @@
             <?php
             // premier parcours du tableau des frais forfaitisés du visiteur connecté
             // pour afficher la ligne des libellés des frais forfaitisés
-            foreach ( $tabEltsFraisForfait as $unLibelle => $uneQuantite ) {
+            foreach ( $tabEltsFraisForfait as $unLibelle => $uneQuantite )
+            {
             ?>
                 <th><?php echo $unLibelle ; ?></th>
             <?php
@@ -126,7 +134,8 @@
             <?php
             // second parcours du tableau des frais forfaitisés du visiteur connecté
             // pour afficher la ligne des quantités des frais forfaitisés
-            foreach ( $tabEltsFraisForfait as $unLibelle => $uneQuantite ) {
+            foreach ( $tabEltsFraisForfait as $unLibelle => $uneQuantite )
+            {
             ?>
                 <td class="qteForfait"><?php echo $uneQuantite ; ?></td>
             <?php
@@ -150,7 +159,8 @@
             $lgEltHorsForfait = mysql_fetch_assoc($idJeuEltsHorsForfait);
             
             // parcours des éléments hors forfait 
-            while ( is_array($lgEltHorsForfait) ) {
+            while ( is_array($lgEltHorsForfait) )
+            {
             ?>
                 <tr>
                    <td><?php echo $lgEltHorsForfait["date"] ; ?></td>
