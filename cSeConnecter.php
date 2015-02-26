@@ -43,9 +43,9 @@
               }
           }
 ?>               
-      <form id="frmConnexion" action="" method="post">
+      <form id="frmConnexion" name="frm_Connexion" action="" method="post">
       <div class="corpsForm">
-        <input type="hidden" name="etape" id="etape" value="validerConnexion" />
+        <input type="hidden" name="hd_etape" id="etape" value="validerConnexion" />
       <p>
         <label for="txtLogin" accesskey="n">* Login : </label>
         <input type="text" id="txtLogin" name="txtLogin" maxlength="20" size="15" value="" title="Entrez votre login" />
@@ -57,8 +57,8 @@
       </div>
       <div class="piedForm">
       <p>
-        <input type="submit"name="ok" id="ok" value="Valider" />
-        <input type="reset"name="annuler" id="annuler" value="Effacer" />
+        <input type="submit"name="cmd_ok" id="ok" value="Valider" />
+        <input type="reset"name="br_annuler" id="annuler" value="Effacer" />
       </p> 
       </div>
       </form>

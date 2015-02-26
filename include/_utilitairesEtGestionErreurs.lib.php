@@ -199,7 +199,7 @@ function ajouterErreur(&$tabErr,$msg) {
  * @param array $tabErr tableau des messages d'erreurs  
  * @return int nombre de messages d'erreurs
  */ 
-function nbErreurs($tabErr) {
+function obtenirNbErreurs($tabErr) {
     return count($tabErr);
 }
  
@@ -211,7 +211,8 @@ function nbErreurs($tabErr) {
  * @param array $tabErr tableau des messages d'erreurs  
  * @return string source html
  */ 
-function toStringErreurs($tabErr) {
+function toStringErreurs($tabErr)
+{
     $str = '<div class="erreur">';
     $str .= '<ul>';
     foreach($tabErr as $erreur){

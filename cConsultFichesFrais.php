@@ -40,9 +40,9 @@
   <div id="contenu">
       <h2>Mes fiches de frais</h2>
       <h3>Mois à sélectionner : </h3>
-      <form action="" method="post">
+      <form action="" name="frm_ConsultFrais" method="post">
       <div class="corpsForm">
-          <input type="hidden" name="etape" value="validerConsult" />
+          <input type="hidden" name="hd_etape" value="validerConsult" />
       <p>
         <label for="lstMois">Mois : </label>
         <select id="lstMois" name="lstMois" title="Sélectionnez le mois souhaité pour la fiche de frais">
@@ -56,7 +56,7 @@
                     $noMois = intval(substr($mois, 4, 2));
                     $annee = intval(substr($mois, 0, 4));
             ?>    
-            <option value="<?php echo $mois; ?>"<?php if ($moisSaisi == $mois) { ?> selected="selected"<?php } ?>><?php echo obtenirLibelleMois($noMois) . " " . $annee; ?></option>
+            <option value="<?php echo $mois; ?>"<?php if ($moisSaisi == $mois) { ?> selected="selected"<?php } ?>><?php echo obtenirLibelleMois($noMois) ." ". $annee; ?></option>
             <?php
                     $lgMois = mysql_fetch_assoc($idJeuMois);        
                 }
@@ -67,9 +67,9 @@
       </div>
       <div class="piedForm">
       <p>
-        <input id="ok" name="ok" type="submit" value="Valider" size="20"
+        <input id="ok" name="cmd_ok" type="submit" value="Valider" size="20"
                title="Demandez à consulter cette fiche de frais" />
-        <input id="annuler" name="annuler" type="reset" value="Effacer" size="20" />
+        <input id="annuler" name="br_annuler" type="reset" value="Effacer" size="20" />
       </p> 
       </div>
         
@@ -84,7 +84,7 @@
         }
         else {
 ?>
-    <h3>Fiche de frais du mois de <?php echo obtenirLibelleMois(intval(substr($moisSaisi,4,2))) . " " . substr($moisSaisi,0,4); ?> : 
+    <h3>Fiche de frais du mois de <?php echo obtenirLibelleMois(intval(substr($moisSaisi,4,2))) ." ". substr($moisSaisi,0,4); ?> :
     <em><?php echo $tabFicheFrais["libelleEtat"]; ?> </em>
     depuis le <em><?php echo $tabFicheFrais["dateModif"]; ?></em></h3>
     <div class="encadre">

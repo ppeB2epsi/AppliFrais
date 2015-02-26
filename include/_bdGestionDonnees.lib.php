@@ -124,14 +124,14 @@ function existeFicheFrais($idCnx, $unMois, $unIdVisiteur) {
     $requete = "select idVisiteur from FicheFrais where idVisiteur='" . $unIdVisiteur . 
               "' and mois='" . $unMois . "'";
     $idJeuRes = mysql_query($requete, $idCnx);  
-    $ligne = false ;
+    $ligne = false;
     if ( $idJeuRes ) {
         $ligne = mysql_fetch_assoc($idJeuRes);
         mysql_free_result($idJeuRes);
     }        
     
     // si $ligne est un tableau, la fiche de frais existe, sinon elle n'exsite pas
-    return is_array($ligne) ;
+    return is_array($ligne);
 }
 
 /** 
@@ -145,7 +145,7 @@ function obtenirDernierMoisSaisi($idCnx, $unIdVisiteur) {
 	$requete = "select max(mois) as dernierMois from FicheFrais where idVisiteur='" .
             $unIdVisiteur . "'";
 	$idJeuRes = mysql_query($requete, $idCnx);
-    $dernierMois = false ;
+    $dernierMois = false;
     if ( $idJeuRes ) {
         $ligne = mysql_fetch_assoc($idJeuRes);
         $dernierMois = $ligne["dernierMois"];

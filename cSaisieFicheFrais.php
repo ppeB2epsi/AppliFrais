@@ -60,7 +60,7 @@
 ?>
   <!-- Division principale -->
   <div id="contenu">
-      <h2>Renseigner ma fiche de frais du mois de <?php echo obtenirLibelleMois(intval(substr($mois,4,2))) . " " . substr($mois,0,4); ?></h2>
+      <h2>Renseigner ma fiche de frais du mois de <?php echo obtenirLibelleMois(intval(substr($mois,4,2))) ." ". substr($mois,0,4); ?></h2>
 <?php
   if ($etape == "validerSaisie" || $etape == "validerAjoutLigneHF" || $etape == "validerSuppressionLigneHF") {
       if (nbErreurs($tabErreurs) > 0) {
@@ -73,9 +73,9 @@
       }   
   }
       ?>            
-      <form action="" method="post">
+      <form action="" name="frm_SaisieFrais" method="post">
       <div class="corpsForm">
-          <input type="hidden" name="etape" value="validerSaisie" />
+          <input type="hidden" name="hd_etape" value="validerSaisie" />
           <fieldset>
             <legend>Eléments forfaitisés
             </legend>
@@ -108,9 +108,9 @@
       </div>
       <div class="piedForm">
       <p>
-        <input id="ok" name="ok" type="submit" value="Valider" size="20"
+        <input id="ok" name="cmd_ok" type="submit" value="Valider" size="20"
                title="Enregistrer les nouvelles valeurs des éléments forfaitisés" />
-        <input id="annuler" name="annuler" type="reset" value="Effacer" size="20" />
+        <input id="annuler" name="br_annuler" type="reset" value="Effacer" size="20" />
       </p> 
       </div>
         
