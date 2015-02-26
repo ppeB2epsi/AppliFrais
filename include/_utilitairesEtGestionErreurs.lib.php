@@ -13,12 +13,14 @@
  * @param int numéro de mois
  * @return string identifiant de connexion
  */
-function obtenirLibelleMois($unNoMois) {
+function obtenirLibelleMois($unNoMois)
+{
     $tabLibelles = array(1=>"Janvier", 
                             "Février", "Mars", "Avril", "Mai", "Juin", "Juillet",
                             "Août", "Septembre", "Octobre", "Novembre", "Décembre");
     $libelle="";
-    if ( $unNoMois >=1 && $unNoMois <= 12 ) {
+    if ( $unNoMois >=1 && $unNoMois <= 12 )
+    {
         $libelle = $tabLibelles[$unNoMois];
     }
     return $libelle;
@@ -31,18 +33,23 @@ function obtenirLibelleMois($unNoMois) {
  * @param string date à vérifier
  * @return boolean succès ou échec
  */ 
-function estDate($date) {
+function estDate($date)
+{
 	$tabDate = explode('/',$date);
-	if (count($tabDate) != 3) {
+	if (count($tabDate) != 3)
+    {
 	    $dateOK = false;
     }
-    elseif (!verifierEntiersPositifs($tabDate)) {
+    elseif (!verifierEntiersPositifs($tabDate))
+    {
         $dateOK = false;
     }
-    elseif (!checkdate($tabDate[1], $tabDate[0], $tabDate[2])) {
+    elseif (!checkdate($tabDate[1], $tabDate[0], $tabDate[2]))
+    {
         $dateOK = false;
     }
-    else {
+    else
+    {
         $dateOK = true;
     }
 	return $dateOK;
@@ -53,7 +60,8 @@ function estDate($date) {
  * @param $date au format  jj/mm/aaaa
  * @return string la date au format anglais aaaa-mm-jj
 */
-function convertirDateFrancaisVersAnglais($date){
+function convertirDateFrancaisVersAnglais($date)
+{
 	@list($jour,$mois,$annee) = explode('/',$date);
 	return date("Y-m-d", mktime(0, 0, 0, $mois, $jour, $annee));
 }
@@ -64,7 +72,8 @@ function convertirDateFrancaisVersAnglais($date){
  * @param $date au format  aaaa-mm-jj
  * @return string la date au format format français jj/mm/aaaa
 */
-function convertirDateAnglaisVersFrancais($date){
+function convertirDateAnglaisVersFrancais($date)
+{
     @list($annee,$mois,$jour) = explode('-',$date);
 	return date("d/m/Y", mktime(0, 0, 0, $mois, $jour, $annee));
 }
@@ -77,7 +86,8 @@ function convertirDateAnglaisVersFrancais($date){
  * @param $date date au format jj/mm/aaaa
  * @return boolean succès ou échec
 */
-function estDansAnneeEcoulee($date) {
+function estDansAnneeEcoulee($date)
+{
 	$dateAnglais = convertirDateFrancaisVersAnglais($date);
 	$dateDuJourAnglais = date("Y-m-d");
 	$dateDuJourMoinsUnAnAnglais = date("Y-m-d", mktime(0, 0, 0, date("m"), date("d"), date("Y") - 1));
@@ -92,7 +102,8 @@ function estDansAnneeEcoulee($date) {
  * @param string chaîne à vérifier
  * @return boolean succès ou échec
  */ 
-function estEntierPositif($valeur) {
+function estEntierPositif($valeur)
+{
     return preg_match("/[^0-9]/", $valeur) == 0;
 }
 
@@ -104,10 +115,13 @@ function estEntierPositif($valeur) {
  * @param array $lesValeurs tableau des valeurs
  * @return booléen succès ou échec
  */ 
-function verifierEntiersPositifs($lesValeurs){
+function verifierEntiersPositifs($lesValeurs)
+{
     $ok = true;     
-    foreach ( $lesValeurs as $val ) {
-        if ($val=="" || ! estEntierPositif($val) ) {
+    foreach ( $lesValeurs as $val )
+    {
+        if ($val=="" || ! estEntierPositif($val) )
+        {
             $ok = false;
         }
     }
@@ -123,11 +137,14 @@ function verifierEntiersPositifs($lesValeurs){
  * @param string valeur par défaut 
  * @return string valeur de la donnée
  */ 
-function lireDonneeUrl($nomDonnee, $valDefaut="") {
-    if ( isset($_GET[$nomDonnee]) ) {
+function lireDonneeUrl($nomDonnee, $valDefaut="")
+{
+    if ( isset($_GET[$nomDonnee]) )
+    {
         $val = $_GET[$nomDonnee];
     }
-    else {
+    else
+    {
         $val = $valDefaut;
     }
     return $val;
@@ -143,11 +160,14 @@ function lireDonneeUrl($nomDonnee, $valDefaut="") {
  * @param string valeur par défaut 
  * @return string valeur de la donnée
  */ 
-function lireDonneePost($nomDonnee, $valDefaut="") {
-    if ( isset($_POST[$nomDonnee]) ) {
+function lireDonneePost($nomDonnee, $valDefaut="")
+{
+    if ( isset($_POST[$nomDonnee]) )
+    {
         $val = $_POST[$nomDonnee];
     }
-    else {
+    else
+    {
         $val = $valDefaut;
     }
     return $val;
@@ -166,14 +186,18 @@ function lireDonneePost($nomDonnee, $valDefaut="") {
  * @param string valeur par défaut 
  * @return string valeur de la donnée
  */ 
-function lireDonnee($nomDonnee, $valDefaut="") {
-    if ( isset($_GET[$nomDonnee]) ) {
+function lireDonnee($nomDonnee, $valDefaut="")
+{
+    if ( isset($_GET[$nomDonnee]) )
+    {
         $val = $_GET[$nomDonnee];
     }
-    elseif ( isset($_POST[$nomDonnee]) ) {
+    elseif ( isset($_POST[$nomDonnee]) )
+    {
         $val = $_POST[$nomDonnee];
     }
-    else {
+    else
+    {
         $val = $valDefaut;
     }
     return $val;
@@ -188,7 +212,8 @@ function lireDonnee($nomDonnee, $valDefaut="") {
  * @param string message
  * @return void
  */ 
-function ajouterErreur(&$tabErr,$msg) {
+function ajouterErreur(&$tabErr,$msg)
+{
     $tabErr[count($tabErr)]=$msg;
 }
 
@@ -199,7 +224,8 @@ function ajouterErreur(&$tabErr,$msg) {
  * @param array $tabErr tableau des messages d'erreurs  
  * @return int nombre de messages d'erreurs
  */ 
-function obtenirNbErreurs($tabErr) {
+function obtenirNbErreurs($tabErr)
+{
     return count($tabErr);
 }
  
@@ -215,7 +241,8 @@ function toStringErreurs($tabErr)
 {
     $str = '<div class="erreur">';
     $str .= '<ul>';
-    foreach($tabErr as $erreur){
+    foreach($tabErr as $erreur)
+    {
         $str .= '<li>' . $erreur . '</li>';
 	}
     $str .= '</ul>';
@@ -232,7 +259,8 @@ function toStringErreurs($tabErr)
  * @param string $str chaîne à échapper
  * @return string chaîne échappée 
  */ 
-function filtrerChainePourNavig($str) {
+function filtrerChainePourNavig($str)
+{
     return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
 }
 
@@ -249,26 +277,32 @@ function filtrerChainePourNavig($str) {
  * @param array $tabErrs tableau des messages d'erreurs passé par référence
  * @return void
  */ 
-function verifierLigneFraisHF($date, $libelle, $montant, &$tabErrs) {
+function verifierLigneFraisHF($date, $libelle, $montant, &$tabErrs)
+{
     // vérification du libellé 
-    if ($libelle == "") {
+    if ($libelle == "")
+    {
 		ajouterErreur($tabErrs, "Le libellé doit être renseigné.");
 	}
 	// vérification du montant
-	if ($montant == "") {
+	if ($montant == "")
+    {
 		ajouterErreur($tabErrs, "Le montant doit être renseigné.");
 	}
 	elseif ( !is_numeric($montant) || $montant < 0 ) {
         ajouterErreur($tabErrs, "Le montant doit être numérique positif.");
     }
     // vérification de la date d'engagement
-	if ($date == "") {
+	if ($date == "")
+    {
 		ajouterErreur($tabErrs, "La date d'engagement doit être renseignée.");
 	}
-	elseif (!estDate($date)) {
+	elseif (!estDate($date))
+    {
 		ajouterErreur($tabErrs, "La date d'engagement doit être valide au format JJ/MM/AAAA");
 	}	
-	elseif (!estDansAnneeEcoulee($date)) {
+	elseif (!estDansAnneeEcoulee($date))
+    {
 	    ajouterErreur($tabErrs,"La date d'engagement doit se situer dans l'année écoulée");
     }
 }

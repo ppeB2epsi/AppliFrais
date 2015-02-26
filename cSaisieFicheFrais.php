@@ -8,7 +8,8 @@
   require($repInclude . "_init.inc.php");
 
   // page inaccessible si visiteur non connecté
-  if (!estVisiteurConnecte()) {
+  if (!estVisiteurConnecte())
+  {
       header("Location: cSeConnecter.php");  
   }
   require($repInclude . "_entete.inc.html");
@@ -18,7 +19,8 @@
   // vérification de l'existence de la fiche de frais pour ce mois courant
   $existeFicheFrais = existeFicheFrais($idConnexion, $mois, obtenirIdUserConnecte());
   // si elle n'existe pas, on la crée avec les élets frais forfaitisés à 0
-  if ( !$existeFicheFrais ) {
+  if ( !$existeFicheFrais )
+  {
       ajouterFicheFrais($idConnexion, $mois, obtenirIdUserConnecte());
   }
   // acquisition des données entrées
@@ -33,28 +35,35 @@
   $montantHF = lireDonnee("txtMontantHF", "");
  
   // structure de décision sur les différentes étapes du cas d'utilisation
-  if ($etape == "validerSaisie") { 
+  if ($etape == "validerSaisie")
+  {
       // l'utilisateur valide les éléments forfaitisés         
       // vérification des quantités des éléments forfaitisés
       $ok = verifierEntiersPositifs($tabQteEltsForfait);      
-      if (!$ok) {
+      if (!$ok)
+      {
           ajouterErreur($tabErreurs, "Chaque quantité doit être renseignée et numérique positive.");
       }
-      else { // mise à jour des quantités des éléments forfaitisés
+      else
+      { // mise à jour des quantités des éléments forfaitisés
           modifierEltsForfait($idConnexion, $mois, obtenirIdUserConnecte(),$tabQteEltsForfait);
       }
   }                                                       
-  elseif ($etape == "validerSuppressionLigneHF") {
+  elseif ($etape == "validerSuppressionLigneHF")
+  {
       supprimerLigneHF($idConnexion, $idLigneHF);
   }
-  elseif ($etape == "validerAjoutLigneHF") {
+  elseif ($etape == "validerAjoutLigneHF")
+  {
       verifierLigneFraisHF($dateHF, $libelleHF, $montantHF, $tabErreurs);
-      if ( nbErreurs($tabErreurs) == 0 ) {
+      if ( nbErreurs($tabErreurs) == 0 )
+      {
           // la nouvelle ligne ligne doit être ajoutée dans la base de données
           ajouterLigneHF($idConnexion, $mois, obtenirIdUserConnecte(), $dateHF, $libelleHF, $montantHF);
       }
   }
-  else { // on ne fait rien, étape non prévue 
+  else
+  { // on ne fait rien, étape non prévue
   
   }                                  
 ?>
@@ -63,10 +72,12 @@
       <h2>Renseigner ma fiche de frais du mois de <?php echo obtenirLibelleMois(intval(substr($mois,4,2))) ." ". substr($mois,0,4); ?></h2>
 <?php
   if ($etape == "validerSaisie" || $etape == "validerAjoutLigneHF" || $etape == "validerSuppressionLigneHF") {
-      if (nbErreurs($tabErreurs) > 0) {
+      if (nbErreurs($tabErreurs) > 0)
+      {
           echo toStringErreurs($tabErreurs);
       } 
-      else {
+      else
+      {
 ?>
       <p class="info">Les modifications de la fiche de frais ont bien été enregistrées</p>        
 <?php
@@ -132,7 +143,8 @@
           $lgEltHorsForfait = mysql_fetch_assoc($idJeuEltsHorsForfait);
           
           // parcours des frais hors forfait du visiteur connecté
-          while ( is_array($lgEltHorsForfait) ) {
+          while ( is_array($lgEltHorsForfait) )
+          {
           ?>
               <tr>
                 <td><?php echo $lgEltHorsForfait["date"] ; ?></td>
