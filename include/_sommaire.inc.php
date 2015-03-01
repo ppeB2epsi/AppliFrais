@@ -13,7 +13,7 @@
       if (estVisiteurConnecte() )
       {
           $idUser = obtenirIdUserConnecte() ;
-          $lgUser = obtenirDetailVisiteur($idConnexion, $idUser);
+          $lgUser = $bdd->obtenirDetailVisiteur($idUser);
           $nom = $lgUser['nom'];
           $prenom = $lgUser['prenom'];            
     ?>

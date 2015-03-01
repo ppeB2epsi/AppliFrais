@@ -20,13 +20,14 @@ class Bdd
         }
     }
 
-    public function filtrerChainePourBD($str) {
-        if ( ! get_magic_quotes_gpc() ) { 
+    public function filtrerChainePourBD($str)
+    {
+        /*if ( ! get_magic_quotes_gpc() ) {
             // si la directive de configuration magic_quotes_gpc est activ�e dans php.ini,
             // toute cha�ne re�ue par get, post ou cookie est d�j� �chapp�e 
             // par cons�quent, il ne faut pas �chapper la cha�ne une seconde fois                              
             $str = mysql_real_escape_string($str);
-        }
+        }*/
         return $str;
     }
 
@@ -39,7 +40,7 @@ class Bdd
             
             $req = $this->connexion->prepare('SELECT  id , nom , prenom FROM Visiteur WHERE id = :id '); // we prepared the resquest
             $req->execute($tab);
-            $visiteur = $req->fetchAll();
+            $visiteur = $req->fetch();
             return (!empty($visiteur))? $visiteur : false;
 
         } catch (Exception $e) {
@@ -48,17 +49,16 @@ class Bdd
     }
 
     public function verifierInfosConnexion($login, $mdp) {
-        $login = filtrerChainePourBD($login);
-        $mdp = filtrerChainePourBD($mdp);
+        $login = $this->filtrerChainePourBD($login);
+        $mdp = $this->filtrerChainePourBD($mdp);
 
         $tab =  array(
             'login' => $login,
             'mdp' => $mdp,
         );
-
         try{
 
-            $req =  $this->connexion->prepare('SELECT  id, nom , prenom, login, mdp FROM visiteur WHERE login = :login AND mdp = :mdp');;
+            $req = $this->connexion->prepare('SELECT  id, nom , prenom, login, mdp FROM visiteur WHERE login = :login AND mdp = :mdp');
             $req->execute($tab);
             $visiteur = $req->fetch(); 
             return $visiteur;
@@ -117,7 +117,7 @@ class Bdd
      * @return bool�en existence ou non de la fiche de frais
      */
     public function existeFicheFrais( $unMois, $unIdVisiteur) {
-        $unMois = filtrerChainePourBD($unMois);
+        $unMois = $this->filtrerChainePourBD($unMois);
 
         $tab = array(
 
@@ -155,7 +155,7 @@ class Bdd
         $req->execute($tab);
         $result = $req->fetchAll();
         $dernierMois = $result["dernierMois"];
-       }       
+
         return $dernierMois;
     }
 
@@ -169,37 +169,46 @@ class Bdd
      * @param string $unIdVisiteur id visiteur  
      * @return void
      */
-    public function ajouterFicheFrais($idCnx, $unMois, $unIdVisiteur) {
-        $unMois = filtrerChainePourBD($unMois);
-        // modification de la derni�re fiche de frais du visiteur
-        $dernierMois = obtenirDernierMoisSaisi($idCnx, $unIdVisiteur);
-        $laDerniereFiche = obtenirDetailFicheFrais($idCnx, $dernierMois, $unIdVisiteur);
-        if ( is_array($laDerniereFiche) && $laDerniereFiche['idEtat']=='CR'){
-            modifierEtatFicheFrais($idCnx, $dernierMois, $unIdVisiteur, 'CL');
-        }
-        
-        // ajout de la fiche de frais � l'�tat Cr��
-        $requete = "insert into FicheFrais (idVisiteur, mois, nbJustificatifs, montantValide, idEtat, dateModif) values ('" 
-                  . $unIdVisiteur 
-                  . "','" . $unMois . "',0,NULL, 'CR', '" . date("Y-m-d") . "')";
-        mysql_query($requete, $idCnx);
-        
-        // ajout des �l�ments forfaitis�s
-        $requete = "select id from FraisForfait";
-        $idJeuRes = mysql_query($requete, $idCnx);
-        if ( $idJeuRes ) {
-            $ligne = mysql_fetch_assoc($idJeuRes);
-            while ( is_array($ligne) ) {
-                $idFraisForfait = $ligne["id"];
-                // insertion d'une ligne frais forfait dans la base
-                $requete = "insert into LigneFraisForfait (idVisiteur, mois, idFraisForfait, quantite)
-                            values ('" . $unIdVisiteur . "','" . $unMois . "','" . $idFraisForfait . "',0)";
-                mysql_query($requete, $idCnx);
-                // passage au frais forfait suivant
-                $ligne = mysql_fetch_assoc ($idJeuRes);
+    public function ajouterFicheFrais($unMois, $unIdVisiteur) {
+        try {
+            $unMois = $this->filtrerChainePourBD($unMois);
+            // modification de la derni�re fiche de frais du visiteur
+            $dernierMois = $this->obtenirDernierMoisSaisi($unIdVisiteur);
+            $laDerniereFiche = $this->obtenirDetailFicheFrais($dernierMois, $unIdVisiteur);
+            if (is_array($laDerniereFiche) && $laDerniereFiche['idEtat'] == 'CR') {
+                $this->modifierEtatFicheFrais($dernierMois, $unIdVisiteur, 'CL');
             }
-            mysql_free_result($idJeuRes);       
-        }        
+
+            // ajout de la fiche de frais � l'�tat Cr��
+            $sql = "insert into fichefrais (idVisiteur, mois, nbJustificatifs, montantValide, idEtat, dateModif) values ('"
+                . $unIdVisiteur
+                . "','" . $unMois . "',0,NULL, 'CR', '" . date("Y-m-d") . "')";
+            $req = $this->connexion->prepare($sql);
+            $req->execute();
+
+
+            // ajout des �l�ments forfaitis�s
+            $sql = "select id from FraisForfait";
+            $idJeuRes = $this->connexion->prepare($sql);
+            $idJeuRes->execute();
+
+            if ($idJeuRes) {
+                $ligne = $idJeuRes->fetchAll();
+                while (is_array($ligne)) {
+                    $idFraisForfait = $ligne["id"];
+                    // insertion d'une ligne frais forfait dans la base
+                    $sql = "insert into LigneFraisForfait (idVisiteur, mois, idFraisForfait, quantite)
+                            values ('" . $unIdVisiteur . "','" . $unMois . "','" . $idFraisForfait . "',0)";
+                    $req = $this->connexion->prepare($sql);
+                    $req->execute();
+                    // passage au frais forfait suivant
+                    $ligne = $idJeuRes->fetchAll();
+                }
+            }
+        }
+        catch (Exception $e){
+            die('Erreur ajout fiche frais: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -240,11 +249,19 @@ class Bdd
      * @return string texte de la requ�te select
      */                                                 
     public function obtenirReqEltsForfaitFicheFrais($unMois, $unIdVisiteur) {
-        $unMois = filtrerChainePourBD($unMois);
-        $requete = "select idFraisForfait, libelle, quantite from LigneFraisForfait
+        $unMois = $this->filtrerChainePourBD($unMois);
+        $sql = "select idFraisForfait, libelle, quantite from LigneFraisForfait
                   inner join FraisForfait on FraisForfait.id = LigneFraisForfait.idFraisForfait
                   where idVisiteur='" . $unIdVisiteur . "' and mois='" . $unMois . "'";
-        return $requete;
+        try {
+            $req = $this->connexion->prepare($sql);
+            $req->execute();
+            $result = $req->fetchAll();
+            return $result;
+        }
+        catch (Exception $e){
+            die('Erreur obtenir fiche frais : ' . $e->getMessage());
+        }
     }
 
     /**
@@ -259,11 +276,14 @@ class Bdd
      * @return string texte de la requ�te select
      */                                                 
     public function obtenirReqEltsHorsForfaitFicheFrais($unMois, $unIdVisiteur) {
-        $unMois = filtrerChainePourBD($unMois);
-        $requete = "select id, date, libelle, montant from LigneFraisHorsForfait
+        $unMois = $this->filtrerChainePourBD($unMois);
+        $sql = "select id, date, libelle, montant from LigneFraisHorsForfait
                   where idVisiteur='" . $unIdVisiteur 
                   . "' and mois='" . $unMois . "'";
-        return $requete;
+        $req = $this->connexion->prepare($sql);
+        $req->execute();
+        $result = $req->fetchAll();
+        return $result;
     }
 
     /**
@@ -273,9 +293,10 @@ class Bdd
      * @param string $idLigneHF id de la ligne hors forfait
      * @return void
      */
-    public function supprimerLigneHF($idCnx, $unIdLigneHF) {
-        $requete = "delete from LigneFraisHorsForfait where id = " . $unIdLigneHF;
-        mysql_query($requete, $idCnx);
+    public function supprimerLigneHF($unIdLigneHF) {
+        $sql = "delete from LigneFraisHorsForfait where id = " . $unIdLigneHF;
+        $req = $this->connexion->prepare($sql);
+        $req->execute();
     }
 
     /**
@@ -291,13 +312,20 @@ class Bdd
      * @param double $unMontantHF montant du frais hors forfait
      * @return void
      */
-    public function ajouterLigneHF($idCnx, $unMois, $unIdVisiteur, $uneDateHF, $unLibelleHF, $unMontantHF) {
-        $unLibelleHF = filtrerChainePourBD($unLibelleHF);
-        $uneDateHF = filtrerChainePourBD(convertirDateFrancaisVersAnglais($uneDateHF));
-        $unMois = filtrerChainePourBD($unMois);
-        $requete = "insert into LigneFraisHorsForfait(idVisiteur, mois, date, libelle, montant) 
-                    values ('" . $unIdVisiteur . "','" . $unMois . "','" . $uneDateHF . "','" . $unLibelleHF . "'," . $unMontantHF .")";
-        mysql_query($requete, $idCnx);
+    public function ajouterLigneHF($unMois, $unIdVisiteur, $uneDateHF, $unLibelleHF, $unMontantHF) {
+        $unLibelleHF = $this->filtrerChainePourBD($unLibelleHF);
+        $uneDateHF = $this->filtrerChainePourBD(convertirDateFrancaisVersAnglais($uneDateHF));
+        $unMois = $this->filtrerChainePourBD($unMois);
+
+        try {
+            $sql = "insert into LigneFraisHorsForfait(idVisiteur, mois, date, libelle, montant)
+                    values ('" . $unIdVisiteur . "','" . $unMois . "','" . $uneDateHF . "','" . $unLibelleHF . "'," . $unMontantHF . ")";
+            $req = $this->connexion->prepare($sql);
+            $req->execute();
+        }
+        catch (Exception $e){
+            die('Erreur ajout ligne HF : ' . $e->getMessage());
+        }
     }
 
     /**
@@ -314,14 +342,21 @@ class Bdd
      * avec pour cl�s les identifiants des frais forfaitis�s 
      * @return void  
      */
-    public function modifierEltsForfait($idCnx, $unMois, $unIdVisiteur, $desEltsForfait) {
-        $unMois=filtrerChainePourBD($unMois);
-        $unIdVisiteur=filtrerChainePourBD($unIdVisiteur);
+    public function modifierEltsForfait($unMois, $unIdVisiteur, $desEltsForfait) {
+        $unMois= $this->filtrerChainePourBD($unMois);
+        $unIdVisiteur= $this->filtrerChainePourBD($unIdVisiteur);
         foreach ($desEltsForfait as $idFraisForfait => $quantite) {
-            $requete = "update LigneFraisForfait set quantite = " . $quantite 
+            $sql = "update LigneFraisForfait set quantite = " . $quantite
                         . " where idVisiteur = '" . $unIdVisiteur . "' and mois = '"
                         . $unMois . "' and idFraisForfait='" . $idFraisForfait . "'";
-          mysql_query($requete, $idCnx);
+            try {
+                $req = $this->connexion->prepare($sql);
+                $req->execute();
+
+            }
+            catch (Exception $e){
+                die('Erreur modifEltsForfait : ' . $e->getMessage());
+            }
         }
     }
     /**
@@ -334,11 +369,12 @@ class Bdd
      * @param string $unMois mois sous la forme aaaamm
      * @return void 
      */
-    public function modifierEtatFicheFrais($idCnx, $unMois, $unIdVisiteur, $unEtat) {
-        $requete = "update FicheFrais set idEtat = '" . $unEtat . 
+    public function modifierEtatFicheFrais($unMois, $unIdVisiteur, $unEtat) {
+        $sql = "update FicheFrais set idEtat = '" . $unEtat .
                    "', dateModif = now() where idVisiteur ='" .
                    $unIdVisiteur . "' and mois = '". $unMois . "'";
-        mysql_query($requete, $idCnx);
+        $req = $this->connexion->prepare($sql);
+        $req->execute();
     }             
 }
 ?>

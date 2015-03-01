@@ -28,7 +28,7 @@
   { // l'utilisateur valide ses nouvelles données
                 
       // vérification de l'existence de la fiche de frais pour le mois demandé
-      $existeFicheFrais = existeFicheFrais($idConnexion, $moisSaisi, obtenirIdUserConnecte());
+      $existeFicheFrais = $bdd->existeFicheFrais($moisSaisi, obtenirIdUserConnecte());
       // si elle n'existe pas, on la crée avec les élets frais forfaitisés à 0
       if ( !$existeFicheFrais )
       {
@@ -37,7 +37,7 @@
       else
       {
           // récupération des données sur la fiche de frais demandée
-          $tabFicheFrais = obtenirDetailFicheFrais($idConnexion, $moisSaisi, obtenirIdUserConnecte());
+          $tabFicheFrais = $bdd->obtenirDetailFicheFrais($moisSaisi, obtenirIdUserConnecte());
       }
   }                                  
 ?>
@@ -53,20 +53,16 @@
         <select id="lstMois" name="lstMois" title="Sélectionnez le mois souhaité pour la fiche de frais">
             <?php
                 // on propose tous les mois pour lesquels le visiteur a une fiche de frais
-                $req = obtenirReqMoisFicheFrais(obtenirIdUserConnecte());
-                $idJeuMois = mysql_query($req, $idConnexion);
-                $lgMois = mysql_fetch_assoc($idJeuMois);
-                while ( is_array($lgMois) )
+                $lgMois = $bdd->obtenirReqMoisFicheFrais(obtenirIdUserConnecte());
+                foreach ($lgMois as $ligne )
                 {
-                    $mois = $lgMois["mois"];
+                    $mois = $ligne["mois"];
                     $noMois = intval(substr($mois, 4, 2));
                     $annee = intval(substr($mois, 0, 4));
             ?>    
             <option value="<?php echo $mois; ?>"<?php if ($moisSaisi == $mois) { ?> selected="selected"<?php } ?>><?php echo obtenirLibelleMois($noMois) ." ". $annee; ?></option>
             <?php
-                    $lgMois = mysql_fetch_assoc($idJeuMois);        
                 }
-                mysql_free_result($idJeuMois);
             ?>
         </select>
       </p>

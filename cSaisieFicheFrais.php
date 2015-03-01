@@ -17,11 +17,11 @@
   // affectation du mois courant pour la saisie des fiches de frais
   $mois = sprintf("%04d%02d", date("Y"), date("m"));
   // vérification de l'existence de la fiche de frais pour ce mois courant
-  $existeFicheFrais = existeFicheFrais($idConnexion, $mois, obtenirIdUserConnecte());
+  $existeFicheFrais = $bdd->existeFicheFrais($mois, obtenirIdUserConnecte());
   // si elle n'existe pas, on la crée avec les élets frais forfaitisés à 0
   if ( !$existeFicheFrais )
   {
-      ajouterFicheFrais($idConnexion, $mois, obtenirIdUserConnecte());
+      $bdd->ajouterFicheFrais($mois, obtenirIdUserConnecte());
   }
   // acquisition des données entrées
   // acquisition de l'étape du traitement 
@@ -46,12 +46,12 @@
       }
       else
       { // mise à jour des quantités des éléments forfaitisés
-          modifierEltsForfait($idConnexion, $mois, obtenirIdUserConnecte(),$tabQteEltsForfait);
+          $bdd->modifierEltsForfait($mois, obtenirIdUserConnecte(),$tabQteEltsForfait);
       }
   }                                                       
   elseif ($etape == "validerSuppressionLigneHF")
   {
-      supprimerLigneHF($idConnexion, $idLigneHF);
+      $bdd->supprimerLigneHF($idLigneHF);
   }
   elseif ($etape == "validerAjoutLigneHF")
   {
@@ -59,7 +59,7 @@
       if ( nbErreurs($tabErreurs) == 0 )
       {
           // la nouvelle ligne ligne doit être ajoutée dans la base de données
-          ajouterLigneHF($idConnexion, $mois, obtenirIdUserConnecte(), $dateHF, $libelleHF, $montantHF);
+          $bdd->ajouterLigneHF($mois, obtenirIdUserConnecte(), $dateHF, $libelleHF, $montantHF);
       }
   }
   else
@@ -93,14 +93,11 @@
       <?php          
             // demande de la requête pour obtenir la liste des éléments 
             // forfaitisés du visiteur connecté pour le mois demandé
-            $req = obtenirReqEltsForfaitFicheFrais($mois, obtenirIdUserConnecte());
-            $idJeuEltsFraisForfait = mysql_query($req, $idConnexion);
-            echo mysql_error($idConnexion);
-            $lgEltForfait = mysql_fetch_assoc($idJeuEltsFraisForfait);
-            while ( is_array($lgEltForfait) ) {
-                $idFraisForfait = $lgEltForfait["idFraisForfait"];
-                $libelle = $lgEltForfait["libelle"];
-                $quantite = $lgEltForfait["quantite"];
+            $lgEltForfait = $bdd -> obtenirReqEltsForfaitFicheFrais($mois, obtenirIdUserConnecte());
+            foreach ( $lgEltForfait as $ligne ) {
+                $idFraisForfait = $ligne["idFraisForfait"];
+                $libelle = $ligne["libelle"];
+                $quantite = $ligne["quantite"];
             ?>
             <p>
               <label for="<?php echo $idFraisForfait ?>">* <?php echo $libelle; ?> : </label>
@@ -110,10 +107,8 @@
                     title="Entrez la quantité de l'élément forfaitisé" 
                     value="<?php echo $quantite; ?>" />
             </p>
-            <?php        
-                $lgEltForfait = mysql_fetch_assoc($idJeuEltsFraisForfait);   
+            <?php
             }
-            mysql_free_result($idJeuEltsFraisForfait);
             ?>
           </fieldset>
       </div>
@@ -138,26 +133,22 @@
 <?php          
           // demande de la requête pour obtenir la liste des éléments hors
           // forfait du visiteur connecté pour le mois demandé
-          $req = obtenirReqEltsHorsForfaitFicheFrais($mois, obtenirIdUserConnecte());
-          $idJeuEltsHorsForfait = mysql_query($req, $idConnexion);
-          $lgEltHorsForfait = mysql_fetch_assoc($idJeuEltsHorsForfait);
-          
+          $lgEltHorsForfait = $bdd->obtenirReqEltsHorsForfaitFicheFrais($mois, obtenirIdUserConnecte());
+
           // parcours des frais hors forfait du visiteur connecté
-          while ( is_array($lgEltHorsForfait) )
+          foreach( $lgEltHorsForfait as $ligne )
           {
           ?>
               <tr>
-                <td><?php echo $lgEltHorsForfait["date"] ; ?></td>
-                <td><?php echo filtrerChainePourNavig($lgEltHorsForfait["libelle"]) ; ?></td>
-                <td><?php echo $lgEltHorsForfait["montant"] ; ?></td>
-                <td><a href="?etape=validerSuppressionLigneHF&amp;idLigneHF=<?php echo $lgEltHorsForfait["id"]; ?>"
+                <td><?php echo $ligne["date"] ; ?></td>
+                <td><?php echo filtrerChainePourNavig($ligne["libelle"]) ; ?></td>
+                <td><?php echo $ligne["montant"] ; ?></td>
+                <td><a href="?etape=validerSuppressionLigneHF&amp;idLigneHF=<?php echo $ligne["id"]; ?>"
                        onclick="return confirm('Voulez-vous vraiment supprimer cette ligne de frais hors forfait ?');"
                        title="Supprimer la ligne de frais hors forfait">Supprimer</a></td>
               </tr>
           <?php
-              $lgEltHorsForfait = mysql_fetch_assoc($idJeuEltsHorsForfait);
           }
-          mysql_free_result($idJeuEltsHorsForfait);
 ?>
     </table>
       <form action="" method="post">
