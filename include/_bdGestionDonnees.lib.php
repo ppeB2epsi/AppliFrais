@@ -91,7 +91,7 @@ class Bdd
      * @return array tableau associatif de la fiche de frais
      */
     public function obtenirDetailFicheFrais($unMois, $unIdVisiteur) {
-        $unMois = filtrerChainePourBD($unMois);
+        $unMois = $this->filtrerChainePourBD($unMois);
 
         $tab = array(
             'mois' => $unMois,
@@ -104,7 +104,7 @@ class Bdd
             ");
 
         $req->execute($tab);
-        $result = $req->fetchAll();
+        $result = $req->fetch();
         return $result;
     }                  
     /** 
@@ -131,7 +131,7 @@ class Bdd
 
         $req->execute($tab);
         $result = $req->fetchAll();
-        return  is_array($result);
+        return  $result;
         }        
         
     /** 
@@ -153,7 +153,7 @@ class Bdd
 
 
         $req->execute($tab);
-        $result = $req->fetchAll();
+        $result = $req->fetch();
         $dernierMois = $result["dernierMois"];
 
         return $dernierMois;
@@ -180,7 +180,7 @@ class Bdd
             }
 
             // ajout de la fiche de frais � l'�tat Cr��
-            $sql = "insert into fichefrais (idVisiteur, mois, nbJustificatifs, montantValide, idEtat, dateModif) values ('"
+            $sql = "INSERT INTO fichefrais (idVisiteur, mois, nbJustificatifs, montantValide, idEtat, dateModif) VALUES ('"
                 . $unIdVisiteur
                 . "','" . $unMois . "',0,NULL, 'CR', '" . date("Y-m-d") . "')";
             $req = $this->connexion->prepare($sql);
@@ -188,21 +188,19 @@ class Bdd
 
 
             // ajout des �l�ments forfaitis�s
-            $sql = "select id from FraisForfait";
+            $sql = "SELECT id FROM fraisforfait";
             $idJeuRes = $this->connexion->prepare($sql);
             $idJeuRes->execute();
-
-            if ($idJeuRes) {
-                $ligne = $idJeuRes->fetchAll();
-                while (is_array($ligne)) {
+            $result = $idJeuRes->fetchAll();
+            if (is_array($result)) {
+                foreach ($result as $ligne) {
                     $idFraisForfait = $ligne["id"];
                     // insertion d'une ligne frais forfait dans la base
-                    $sql = "insert into LigneFraisForfait (idVisiteur, mois, idFraisForfait, quantite)
-                            values ('" . $unIdVisiteur . "','" . $unMois . "','" . $idFraisForfait . "',0)";
+                    $sql = "INSERT INTO lignefraisforfait (idVisiteur, mois, idFraisForfait, quantite)
+                            VALUES ('" . $unIdVisiteur . "','" . $unMois . "','" . $idFraisForfait . "',0)";
                     $req = $this->connexion->prepare($sql);
                     $req->execute();
                     // passage au frais forfait suivant
-                    $ligne = $idJeuRes->fetchAll();
                 }
             }
         }
@@ -250,12 +248,16 @@ class Bdd
      */                                                 
     public function obtenirReqEltsForfaitFicheFrais($unMois, $unIdVisiteur) {
         $unMois = $this->filtrerChainePourBD($unMois);
-        $sql = "select idFraisForfait, libelle, quantite from LigneFraisForfait
-                  inner join FraisForfait on FraisForfait.id = LigneFraisForfait.idFraisForfait
-                  where idVisiteur='" . $unIdVisiteur . "' and mois='" . $unMois . "'";
+        $tab = array(
+           'unIdVisiteur' => $unIdVisiteur,
+            'unMois' => $unMois
+        );
+        $sql = "SELECT idFraisForfait, libelle, quantite FROM LigneFraisForfait
+                  INNER JOIN FraisForfait ON FraisForfait.id = LigneFraisForfait.idFraisForfait
+                  WHERE idVisiteur= :unIdVisiteur AND mois= :unMois";
         try {
             $req = $this->connexion->prepare($sql);
-            $req->execute();
+            $req->execute($tab);
             $result = $req->fetchAll();
             return $result;
         }
@@ -346,12 +348,18 @@ class Bdd
         $unMois= $this->filtrerChainePourBD($unMois);
         $unIdVisiteur= $this->filtrerChainePourBD($unIdVisiteur);
         foreach ($desEltsForfait as $idFraisForfait => $quantite) {
-            $sql = "update LigneFraisForfait set quantite = " . $quantite
-                        . " where idVisiteur = '" . $unIdVisiteur . "' and mois = '"
-                        . $unMois . "' and idFraisForfait='" . $idFraisForfait . "'";
+            $tab = array(
+                "unMois" => $unMois,
+                "unIdVisiteur" => $unIdVisiteur,
+                "idFraisForfait" => $idFraisForfait,
+                "quantite" => $quantite
+            );
+            $sql = "UPDATE lignefraisforfait SET quantite = :quantite
+                     WHERE idVisiteur = :unIdVisiteur AND mois = :unMois
+                     AND idFraisForfait= :idFraisForfait";
             try {
                 $req = $this->connexion->prepare($sql);
-                $req->execute();
+                $req->execute($tab);
 
             }
             catch (Exception $e){
@@ -370,9 +378,9 @@ class Bdd
      * @return void 
      */
     public function modifierEtatFicheFrais($unMois, $unIdVisiteur, $unEtat) {
-        $sql = "update FicheFrais set idEtat = '" . $unEtat .
-                   "', dateModif = now() where idVisiteur ='" .
-                   $unIdVisiteur . "' and mois = '". $unMois . "'";
+        $sql = "UPDATE fichefrais SET idEtat = '" . $unEtat .
+                   "', dateModif = now() WHERE idVisiteur ='" .
+                   $unIdVisiteur . "' AND mois = '". $unMois . "'";
         $req = $this->connexion->prepare($sql);
         $req->execute();
     }             

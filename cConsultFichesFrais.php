@@ -47,7 +47,7 @@
       <h3>Mois à sélectionner : </h3>
       <form action="" name="frm_ConsultFrais" method="post">
       <div class="corpsForm">
-          <input type="hidden" name="hd_etape" value="validerConsult" />
+          <input type="hidden" name="etape" value="validerConsult" />
       <p>
         <label for="lstMois">Mois : </label>
         <select id="lstMois" name="lstMois" title="Sélectionnez le mois souhaité pour la fiche de frais">
@@ -96,21 +96,16 @@
 <?php          
             // demande de la requête pour obtenir la liste des éléments 
             // forfaitisés du visiteur connecté pour le mois demandé
-            $req = obtenirReqEltsForfaitFicheFrais($moisSaisi, obtenirIdUserConnecte());
-            $idJeuEltsFraisForfait = mysql_query($req, $idConnexion);
-            echo mysql_error($idConnexion);
-            $lgEltForfait = mysql_fetch_assoc($idJeuEltsFraisForfait);
+            $idJeuEltsFraisForfai = $bdd -> obtenirReqEltsForfaitFicheFrais($moisSaisi, obtenirIdUserConnecte());
             // parcours des frais forfaitisés du visiteur connecté
             // le stockage intermédiaire dans un tableau est nécessaire
             // car chacune des lignes du jeu d'enregistrements doit être doit être
             // affichée au sein d'une colonne du tableau HTML
             $tabEltsFraisForfait = array();
-            while ( is_array($lgEltForfait) )
+            foreach ($idJeuEltsFraisForfai as $lgEltForfait)
             {
                 $tabEltsFraisForfait[$lgEltForfait["libelle"]] = $lgEltForfait["quantite"];
-                $lgEltForfait = mysql_fetch_assoc($idJeuEltsFraisForfait);
             }
-            mysql_free_result($idJeuEltsFraisForfait);
             ?>
   	<table class="listeLegere">
   	   <caption>Quantités des éléments forfaitisés</caption>
@@ -150,12 +145,9 @@
 <?php          
             // demande de la requête pour obtenir la liste des éléments hors
             // forfait du visiteur connecté pour le mois demandé
-            $req = obtenirReqEltsHorsForfaitFicheFrais($moisSaisi, obtenirIdUserConnecte());
-            $idJeuEltsHorsForfait = mysql_query($req, $idConnexion);
-            $lgEltHorsForfait = mysql_fetch_assoc($idJeuEltsHorsForfait);
-            
+            $HorsForfait = $bdd -> obtenirReqEltsHorsForfaitFicheFrais($moisSaisi, obtenirIdUserConnecte());
             // parcours des éléments hors forfait 
-            while ( is_array($lgEltHorsForfait) )
+           foreach ($HorsForfait as $lgEltHorsForfait)
             {
             ?>
                 <tr>
@@ -164,9 +156,7 @@
                    <td><?php echo $lgEltHorsForfait["montant"] ; ?></td>
                 </tr>
             <?php
-                $lgEltHorsForfait = mysql_fetch_assoc($idJeuEltsHorsForfait);
             }
-            mysql_free_result($idJeuEltsHorsForfait);
   ?>
     </table>
   </div>

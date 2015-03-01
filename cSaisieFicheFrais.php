@@ -64,7 +64,6 @@
   }
   else
   { // on ne fait rien, étape non prévue
-  
   }                                  
 ?>
   <!-- Division principale -->
@@ -86,7 +85,7 @@
       ?>            
       <form action="" name="frm_SaisieFrais" method="post">
       <div class="corpsForm">
-          <input type="hidden" name="hd_etape" value="validerSaisie" />
+          <input type="hidden" name="etape" value="validerSaisie" />
           <fieldset>
             <legend>Eléments forfaitisés
             </legend>
@@ -94,6 +93,7 @@
             // demande de la requête pour obtenir la liste des éléments 
             // forfaitisés du visiteur connecté pour le mois demandé
             $lgEltForfait = $bdd -> obtenirReqEltsForfaitFicheFrais($mois, obtenirIdUserConnecte());
+
             foreach ( $lgEltForfait as $ligne ) {
                 $idFraisForfait = $ligne["idFraisForfait"];
                 $libelle = $ligne["libelle"];
