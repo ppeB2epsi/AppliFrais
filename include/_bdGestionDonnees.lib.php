@@ -419,7 +419,17 @@ class Bdd
         $result = $req->fetchAll();
         return $result;
 
-
     }
+
+    public function  obtenirMoisFicheFrais()
+    {
+
+        $sql = "SELECT DISTINCT mois FROM fichefrais";
+        $req = $this->connexion->prepare($sql);
+        $req->execute();
+        $result = $req->fetchAll();
+        return $result;
+    }
+
 }
 ?>
