@@ -15,17 +15,22 @@
       // acquisition des données envoyées, ici login et mot de passe
       $login = lireDonneePost("txtLogin");
       $mdp = lireDonneePost("txtMdp");
-      $lgUser = $bdd->verifierInfosConnexion($login, $mdp);
-
+      $lgUser = $bdd->verifierInfosConnexion($login);
       // si l'id utilisateur a été trouvé, donc informations fournies sous forme de tableau
-      if ( is_array($lgUser) )
-      {
-          affecterInfosConnecte($lgUser["id"], $lgUser["login"]);
-      }
-      else
-      {
-          ajouterErreur($tabErreurs, "Pseudo et/ou mot de passe incorrects");
-      }
+      //if ( is_array($lgUser) )
+      //{
+          if (password_verify( $mdp, $lgUser['mdp']))
+          {
+              affecterInfosConnecte($lgUser["id"], $lgUser["login"]);
+          }
+          else{
+              ajouterErreur($tabErreurs, "Pseudo et/ou mot de passe incorrects");
+          }
+      //}
+      //else
+      //{
+         // ajouterErreur($tabErreurs, "Pseudo et/ou mot de passe incorrects");
+      //}
   }
   if ( $etape == "validerConnexion" && nbErreurs($tabErreurs) == 0 )
   {
@@ -48,9 +53,9 @@
               }
           }
 ?>               
-      <form id="frmConnexion" name="frm_Connexion" action="" method="post">
+      <form id="frmConnexion" name="Connexion" action="" method="post">
       <div class="corpsForm">
-        <input type="hidden" name="hd_etape" id="etape" value="validerConnexion" />
+        <input type="hidden" name="etape" id="etape" value="validerConnexion" />
       <p>
         <label for="txtLogin" accesskey="n">* Login : </label>
         <input type="text" id="txtLogin" name="txtLogin" maxlength="20" size="15" value="" title="Entrez votre login" />
@@ -62,8 +67,8 @@
       </div>
       <div class="piedForm">
       <p>
-        <input type="submit" name="cmd_ok" id="ok" value="Valider" />
-        <input type="reset" name="br_annuler" id="annuler" value="Effacer" />
+        <input type="submit" name="ok" id="ok" value="Valider" />
+        <input type="reset" name="annuler" id="annuler" value="Effacer" />
       </p> 
       </div>
       </form>
