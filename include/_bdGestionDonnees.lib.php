@@ -477,7 +477,7 @@ class Bdd
     public function refuserHorsForfait($id)
     {
         $tab = array(
-            ' id '=> $id
+            'id'=> $id
             );
         $req = $this->connexion->prepare('UPDATE LigneFraisHorsForfait SET libelle = CONCAT("REFUSE: ", libelle )WHERE id = :id');
         $req ->execute($tab);   

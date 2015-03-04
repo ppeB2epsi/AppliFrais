@@ -96,6 +96,7 @@ error_reporting(E_ALL ^ E_DEPRECATED);
       ajouterErreur($tabErreurs, "Les elements de la fiche de frais doivent être renseignés");
     }
 
+    var_dump($horsForfait);
     //Gestion des refus des lignes hors forfaits
     if(isset($horsForfait) AND count($horsForfait) > 0)
     {
@@ -142,19 +143,8 @@ error_reporting(E_ALL ^ E_DEPRECATED);
 ?>
   <!-- Division principale -->
   <div id="contenu">
-      <h2>Bienvenue sur l'intranet GSB</h2>
-      <div name="gauche" style="clear:left:;float:left;width:18%; background-color:white; height:100%;">
-<div name="coin" style="height:10%;text-align:center;"><img src="logo.jpg" width="100" height="60"/></div>
-<div name="menu" >
-  <h2>Outils</h2>
-  <ul><li>Frais</li>
-    <ul>
-      <li><a href="formValidFrais.htm" >Enregistrer opération</a></li>
-    </ul>
-  </ul>
-</div>
-</div>
-<div name="droite" style="float:left;width:80%;">
+  <h2>Bienvenue sur l'intranet GSB</h2>
+  <div name="droite" style="float:left;width:80%;">
   <div name="haut" style="margin: 2 2 2 2 ;height:10%;float:left;"><h1>Validation des Frais</h1></div>  
   <div name="bas" style="margin : 10 2 2 2;clear:left;background-color:EE8844;color:white;height:88%;">
     <h1 class="black"> Validation des frais par visiteur </h1>
