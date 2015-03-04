@@ -47,6 +47,22 @@ class Bdd
             die('Erreur récupération visiteur : ' . $e->getMessage());
         }
     }
+    public function obtenirDetailComptable($id) //select all user ( admin )
+    {
+        $tab = array(
+            'id' => $id
+        );
+        try {
+
+            $req = $this->connexion->prepare('SELECT  id , nom , prenom FROM comptable WHERE id = :id '); // we prepared the resquest
+            $req->execute($tab);
+            $visiteur = $req->fetch();
+            return (!empty($visiteur)) ? $visiteur : false;
+
+        } catch (Exception $e) {
+            die('Erreur récupération visiteur : ' . $e->getMessage());
+        }
+    }
 
     public function verifierInfosConnexion($login)
     {
@@ -58,6 +74,24 @@ class Bdd
         try {
 
             $req = $this->connexion->prepare('SELECT  id, nom , prenom, login, mdp FROM visiteur WHERE login = :login');
+            $req->execute($tab);
+            $visiteur = $req->fetch();
+            return $visiteur;
+
+        } catch (Exception $e) {
+            die('Erreur connexion : ' . $e->getMessage());
+        }
+    }
+    public function verifierInfosConnexionComptable($login)
+    {
+        $login = $this->filtrerChainePourBD($login);
+
+        $tab = array(
+            'login' => $login,
+        );
+        try {
+
+            $req = $this->connexion->prepare('SELECT  id, nom , prenom, login, mdp FROM comptable WHERE login = :login');
             $req->execute($tab);
             $visiteur = $req->fetch();
             return $visiteur;
@@ -421,7 +455,7 @@ class Bdd
 
     }
 
-    public function obtenirMoisFicheFrais()
+    public function  obtenirMoisFicheFrais()
     {
 
         $sql = "SELECT DISTINCT mois FROM fichefrais";
@@ -429,15 +463,6 @@ class Bdd
         $req->execute();
         $result = $req->fetchAll();
         return $result;
-    }
-
-    public function refuserHorsForfait($id)
-    {
-        $tab = array(
-            'id' => $id
-            );
-        $req = $this->connexion->prepare("UPDATE LigneFraisHorsForfait SET libelle = CONCAT('REFUSE: ', libelle) WHERE id = :id");
-        $req->execute($tab);
     }
 
 }

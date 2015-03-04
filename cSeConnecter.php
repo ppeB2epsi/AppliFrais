@@ -9,7 +9,6 @@
   
   // est-on au 1er appel du programme ou non ?
   $etape=(count($_POST)!=0)?'validerConnexion' : 'demanderConnexion';
-  
   if ($etape=='validerConnexion')
   { // un client demande à s'authentifier
       // acquisition des données envoyées, ici login et mot de passe
@@ -21,10 +20,19 @@
       //{
           if (password_verify( $mdp, $lgUser['mdp']))
           {
-              affecterInfosConnecte($lgUser["id"], $lgUser["login"]);
+              $comtable ='non';
+              affecterInfosConnecte($lgUser["id"], $lgUser["login"], $comtable);
           }
           else{
-              ajouterErreur($tabErreurs, "Pseudo et/ou mot de passe incorrects");
+              $lgUser = $bdd->verifierInfosConnexionComptable($login);
+              if (password_verify( $mdp, $lgUser['mdp']))
+              {
+                  $comtable = 'oui';
+                  affecterInfosConnecte($lgUser["id"], $lgUser["login"], $comtable);
+              }
+              else{
+                  ajouterErreur($tabErreurs, "Pseudo et/ou mot de passe incorrects");
+              }
           }
       //}
       //else
@@ -38,7 +46,7 @@
   }
 
   require($repInclude . "_entete.inc.html");
-  require($repInclude . "_sommaire.inc.php");
+  //require($repInclude . "_sommaire.inc.php");
   
 ?>
 <!-- Division pour le contenu principal -->
@@ -62,7 +70,7 @@
       </p>
       <p>
         <label for="txtMdp" accesskey="m">* Mot de passe : </label>
-        <input type="password" id="txtMdp" name="txtMdp" maxlength="8" size="15" value=""  title="Entrez votre mot de passe"/>
+        <input type="password" id="txtMdp" name="txtMdp" maxlength="15" size="15" value=""  title="Entrez votre mot de passe"/>
       </p>
       </div>
       <div class="piedForm">

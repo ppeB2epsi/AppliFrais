@@ -39,8 +39,12 @@ function obtenirIdUserConnecte()
  * @param string login du visiteur
  * @return void    
  */
-function affecterInfosConnecte($id, $login)
+function affecterInfosConnecte($id, $login, $compt)
 {
+    if ($compt)
+    {
+        $_SESSION["comptable"] = $compt;
+    }
     $_SESSION["idUser"] = $id;
     $_SESSION["loginUser"] = $login;
 }
@@ -54,6 +58,7 @@ function deconnecterVisiteur()
 {
     unset($_SESSION["idUser"]);
     unset($_SESSION["loginUser"]);
+    unset($_SESSION["comptable"]);
 }
 
 /** 
@@ -62,9 +67,14 @@ function deconnecterVisiteur()
  * Retourne true si un visiteur s'est identifié sur le site, false sinon. 
  * @return boolean échec ou succès
  */
-function estVisiteurConnecte()
+function estComptableConnecte()
 {
     // actuellement il n'y a que les visiteurs qui se connectent
+    if ($_SESSION['comptable'] == 'oui'){
+    return isset($_SESSION["loginUser"]);}
+}
+function estConnecte()
+{
     return isset($_SESSION["loginUser"]);
 }
 ?>

@@ -8,8 +8,8 @@ error_reporting(E_ALL ^ E_DEPRECATED);
   $repInclude = './include/';
   require($repInclude . "_init.inc.php");
 
-  // page inaccessible si visiteur non connecté
-  if ( ! estVisiteurConnecte() ) 
+      // page inaccessible si visiteur non connecté
+  if ( ! estComptableConnecte() )
   {
         header("Location: cSeConnecter.php");  
   }
