@@ -124,7 +124,10 @@ error_reporting(E_ALL ^ E_DEPRECATED);
         </tr>
     </table>
     
-    <p class="titre" /><div style="clear:left;"><h2>Hors Forfait</h2></div>
+    <p class="titre" />
+    <div style="clear:left;">
+      <h2>Hors Forfait</h2>
+    </div>
     <table style="color:white;" border="1">
       <tr>
         <th>Date</th>
@@ -145,7 +148,7 @@ error_reporting(E_ALL ^ E_DEPRECATED);
             <input type="text" size="10" name="hfMont" value="<?= $item['montant'];?>"/>
           </td>
           <td width="80"> 
-            <select size="3" name="hfSitu1">
+            <select size="3" name="hfSitu">
               <option value="E">Enregistré</option>
               <option value="V">Validé</option>
               <option value="R">Remboursé</option>
