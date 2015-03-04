@@ -419,17 +419,19 @@ class Bdd
         $result = $req->fetchAll();
         return $result;
 
+
     }
 
-    public function  obtenirMoisFicheFrais()
+    public function donneVisiteur()
     {
-
-        $sql = "SELECT DISTINCT mois FROM fichefrais";
+$idsession = $_SESSION['id'];
+        $sql = "SELECT nom, prenom, adresse, cp, ville FROM visiteur WHERE id=$idsession";
         $req = $this->connexion->prepare($sql);
         $req->execute();
         $result = $req->fetchAll();
         return $result;
-    }
 
+
+    }
 }
 ?>
