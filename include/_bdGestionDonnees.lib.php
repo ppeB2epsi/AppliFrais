@@ -38,7 +38,7 @@ class Bdd
         );
         try {
 
-            $req = $this->connexion->prepare('SELECT  id , nom , prenom FROM Visiteur WHERE id = :id '); // we prepared the resquest
+            $req = $this->connexion->prepare('SELECT  id , nom , prenom, idVehicule FROM Visiteur WHERE id = :id '); // we prepared the resquest
             $req->execute($tab);
             $visiteur = $req->fetch();
             return (!empty($visiteur)) ? $visiteur : false;
@@ -56,8 +56,8 @@ class Bdd
 
             $req = $this->connexion->prepare('SELECT  id , nom , prenom FROM comptable WHERE id = :id '); // we prepared the resquest
             $req->execute($tab);
-            $visiteur = $req->fetch();
-            return (!empty($visiteur)) ? $visiteur : false;
+            $comptable = $req->fetch();
+            return (!empty($comptable)) ? $comptable : false;
 
         } catch (Exception $e) {
             die('Erreur récupération visiteur : ' . $e->getMessage());
@@ -428,6 +428,15 @@ class Bdd
         $req->execute();
     }
 
+    public function modifierMontantFicheFrais($unMois, $unIdVisiteur, $unMontant)
+    {
+        $sql = "UPDATE fichefrais SET montantValide = '" . $unMontant .
+            "', dateModif = now() WHERE idVisiteur ='" .
+            $unIdVisiteur . "' AND mois = '" . $unMois . "'";
+        $req = $this->connexion->prepare($sql);
+        $req->execute();
+    }
+
     public function changepass($unIdVisiteur, $pass)
     {
 
@@ -464,6 +473,42 @@ class Bdd
         $result = $req->fetchAll();
         return $result;
     }
+
+    public function  obtenirfraisforfait()
+    {
+
+        $sql = "SELECT * FROM fraisforfait";
+        $req = $this->connexion->prepare($sql);
+        $req->execute();
+        $result = $req->fetchAll();
+        return $result;
+    }
+
+    public function  obtenirLignesFicheFrais($mois, $id)
+    {
+        $tab = array(
+            'id' => $id,
+            'mois' =>$mois
+        );
+
+        $sql = "SELECT * FROM lignefraisforfait WHERE idVisiteur= :id AND mois= :mois";
+        $req = $this->connexion->prepare($sql);
+        $req->execute($tab);
+        $result = $req->fetchAll();
+        return $result;
+    }
+     public function obtenirDetailVehicule($id)
+     {
+         $tab = array(
+             'id' => $id,
+         );
+
+         $sql = "SELECT * FROM vehicule WHERE id= :id";
+         $req = $this->connexion->prepare($sql);
+         $req->execute($tab);
+         $result = $req->fetch();
+         return $result;
+     }
 
 }
 ?>
