@@ -519,5 +519,44 @@ class Bdd
          $result = $req->fetch();
          return $result;
      }
+    public function donneVisiteur()
+    {
+        $idsession = $_SESSION['idUser'];
+        $tab=array('idsession'=> $idsession);
+        $sql = "SELECT nom, prenom, adresse, cp, ville FROM visiteur WHERE id=:idsession";
+        $req = $this->connexion->prepare($sql);
+        $req->execute($tab);
+        $result = $req->fetch();
+        return $result;
+
+
+    }
+
+    public function donnefichefrais($moisChoisi,$idfrais)
+    {
+        $idsession = $_SESSION['idUser'];
+
+        $tab=array('idsession'=> $idsession ,'idmois' => $moisChoisi,'idfrais'=>$idfrais);
+        $sql = "SELECT quantite FROM lignefraisforfait WHERE idVisiteur=:idsession AND mois=:idmois AND idFraisForfait=:idfrais";
+        $req = $this->connexion->prepare($sql);
+        $req->execute($tab);
+        $result = $req->fetch();
+        return $result;
+
+
+    }
+    public function donnefichehorsfrais($moisChoisi)
+    {
+        $idsession = $_SESSION['idUser'];
+
+        $tab=array('idsession'=> $idsession ,'idmois' => $moisChoisi);
+        $sql = "SELECT * FROM lignefraishorsforfait WHERE idVisiteur=:idsession AND mois=:idmois ";
+        $req = $this->connexion->prepare($sql);
+        $req->execute($tab);
+        $result = $req->fetchall();
+        return $result;
+
+
+    }
 }
 ?>
