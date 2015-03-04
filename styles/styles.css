@@ -294,3 +294,19 @@ table.listeLegere th.libelle{
   float : left;
 
 }
+
+.black {
+  color: black;
+}
+
+.error {
+  border: 1px solid #DD5555;
+  padding-left:5px;
+  padding-right:5px;
+  margin: 10px;
+}
+
+.error li {
+  color: black;
+  font-size: 8px;
+}

@@ -38,10 +38,26 @@ class Bdd
         );
         try {
 
-            $req = $this->connexion->prepare('SELECT  id , nom , prenom FROM Visiteur WHERE id = :id '); // we prepared the resquest
+            $req = $this->connexion->prepare('SELECT  id , nom , prenom, idVehicule FROM Visiteur WHERE id = :id '); // we prepared the resquest
             $req->execute($tab);
             $visiteur = $req->fetch();
             return (!empty($visiteur)) ? $visiteur : false;
+
+        } catch (Exception $e) {
+            die('Erreur récupération visiteur : ' . $e->getMessage());
+        }
+    }
+    public function obtenirDetailComptable($id) //select all user ( admin )
+    {
+        $tab = array(
+            'id' => $id
+        );
+        try {
+
+            $req = $this->connexion->prepare('SELECT  id , nom , prenom FROM comptable WHERE id = :id '); // we prepared the resquest
+            $req->execute($tab);
+            $comptable = $req->fetch();
+            return (!empty($comptable)) ? $comptable : false;
 
         } catch (Exception $e) {
             die('Erreur récupération visiteur : ' . $e->getMessage());
@@ -58,6 +74,24 @@ class Bdd
         try {
 
             $req = $this->connexion->prepare('SELECT  id, nom , prenom, login, mdp FROM visiteur WHERE login = :login');
+            $req->execute($tab);
+            $visiteur = $req->fetch();
+            return $visiteur;
+
+        } catch (Exception $e) {
+            die('Erreur connexion : ' . $e->getMessage());
+        }
+    }
+    public function verifierInfosConnexionComptable($login)
+    {
+        $login = $this->filtrerChainePourBD($login);
+
+        $tab = array(
+            'login' => $login,
+        );
+        try {
+
+            $req = $this->connexion->prepare('SELECT  id, nom , prenom, login, mdp FROM comptable WHERE login = :login');
             $req->execute($tab);
             $visiteur = $req->fetch();
             return $visiteur;
@@ -394,6 +428,15 @@ class Bdd
         $req->execute();
     }
 
+    public function modifierMontantFicheFrais($unMois, $unIdVisiteur, $unMontant)
+    {
+        $sql = "UPDATE fichefrais SET montantValide = '" . $unMontant .
+            "', dateModif = now() WHERE idVisiteur ='" .
+            $unIdVisiteur . "' AND mois = '" . $unMois . "'";
+        $req = $this->connexion->prepare($sql);
+        $req->execute();
+    }
+
     public function changepass($unIdVisiteur, $pass)
     {
 
@@ -419,19 +462,62 @@ class Bdd
         $result = $req->fetchAll();
         return $result;
 
-
     }
 
-    public function donneVisiteur()
+    public function  obtenirMoisFicheFrais()
     {
-$idsession = $_SESSION['id'];
-        $sql = "SELECT nom, prenom, adresse, cp, ville FROM visiteur WHERE id=$idsession";
+
+        $sql = "SELECT DISTINCT mois FROM fichefrais";
         $req = $this->connexion->prepare($sql);
         $req->execute();
         $result = $req->fetchAll();
         return $result;
-
-
     }
+
+    public function refuserHorsForfait($id)
+    {
+        $tab = array(
+            'id'=> $id
+            );
+        $req = $this->connexion->prepare('UPDATE LigneFraisHorsForfait SET libelle = CONCAT("REFUSE: ", libelle )WHERE id = :id');
+        $req ->execute($tab);   
+    }
+
+
+    public function  obtenirfraisforfait()
+    {
+
+        $sql = "SELECT * FROM fraisforfait";
+        $req = $this->connexion->prepare($sql);
+        $req->execute();
+        $result = $req->fetchAll();
+        return $result;
+    }
+
+    public function  obtenirLignesFicheFrais($mois, $id)
+    {
+        $tab = array(
+            'id' => $id,
+            'mois' =>$mois
+        );
+
+        $sql = "SELECT * FROM lignefraisforfait WHERE idVisiteur= :id AND mois= :mois";
+        $req = $this->connexion->prepare($sql);
+        $req->execute($tab);
+        $result = $req->fetchAll();
+        return $result;
+    }
+     public function obtenirDetailVehicule($id)
+     {
+         $tab = array(
+             'id' => $id,
+         );
+
+         $sql = "SELECT * FROM vehicule WHERE id= :id";
+         $req = $this->connexion->prepare($sql);
+         $req->execute($tab);
+         $result = $req->fetch();
+         return $result;
+     }
 }
 ?>

@@ -8,17 +8,20 @@
   require($repInclude . "_init.inc.php");
 
   // page inaccessible si visiteur non connecté
-  if (!estVisiteurConnecte())
+  if (!estConnecte())
   {
       header("Location: cSeConnecter.php");  
   }
   require($repInclude . "_entete.inc.html");
   require($repInclude . "_sommaire.inc.php");
+
+
   // affectation du mois courant pour la saisie des fiches de frais
   $mois = sprintf("%04d%02d", date("Y"), date("m"));
   // vérification de l'existence de la fiche de frais pour ce mois courant
   $existeFicheFrais = $bdd->existeFicheFrais($mois, obtenirIdUserConnecte());
   // si elle n'existe pas, on la crée avec les élets frais forfaitisés à 0
+
   if ( !$existeFicheFrais )
   {
       $bdd->ajouterFicheFrais($mois, obtenirIdUserConnecte());
