@@ -18,28 +18,86 @@ error_reporting(E_ALL ^ E_DEPRECATED);
 
   $visiteurs = $bdd->obtenirvisiteur();
   $mois = $bdd->obtenirMoisFicheFrais();
+  
+  $data = (isset($_POST))? $_POST : "";
+  $error = array();
+
+   // validation fiche Frais
+  if(isset($data["submit"]) && $data["submit"] == "Envoyer")
+  {
+    $visiteurValid = $data['visiteur']; //
+    $moisValid = $data['mois']; //
+
+    //reformatage des données post pour les lignes hors forfait
+    foreach ($data as $key => $item) 
+    {
+      $parts = explode('-', $key);
+      if($parts[0] === 'hf')
+      {
+        $horsForfait[$parts[1]] = $item;
+      }
+    }
+
+    //
+    if(isset($data['situ']) AND !empty($data['situ']))
+    {
+      $bdd->modifierEtatFicheFrais($moisValid, $visiteurValid, $data["situ"]);
+    }
+    else
+    {
+      ajouterErreur($tabErreurs, "L'état de la fiche de frais doit être renseigné");
+    }
+
+    //
+    if((isset($data['etape']) AND !empty($data['etape'])) AND (isset($data['km']) AND !empty($data['km'])) AND (isset($data['nuitee']) AND !empty($data['nuitee'])) AND (isset($data['repas']) AND !empty($data['repas'])) ) 
+    {
+      $elementsValid = array(
+        'ETP' => $data['etape'],
+        'KM'  => $data['km'],
+        'NUI' => $data['nuitee'],
+        'REP' => $data['repas'],
+      );
+
+      $bdd->modifierEltsForfait($moisValid, $visiteurValid, $elementsValid);
+    }
+    else
+    {
+      ajouterErreur($tabErreurs, "Les elements de la fiche de frais doivent être renseignés");
+    }
+
+    //Gestion des refus des lignes hors forfaits
+    if(isset($horsForfait) AND count($horsForfait) > 0)
+    {
+      foreach ($horsForfait as $key => $item) {
+        if ($item == 'suppr')
+        {
+          $bdd->refuserHorsForfait($key);
+        }
+      }
+    }
+   
+  }
 
   //Recuperation fiche frais
-  if(!empty(lireDonneePost("visiteur")) && !empty(lireDonneePost("mois")))
+  if( isset($data["submit"]))
   {
-    $visiteurSaisi = lireDonneePost("visiteur");
-    $moisSaisi = lireDonneePost("mois");
+    $visiteurValid = lireDonneePost("visiteur");
+    $moisValid = lireDonneePost("mois");
 
     // vérification de l'existence de la fiche de frais pour le mois demandé
-    $existeFicheFrais = $bdd->existeFicheFrais($moisSaisi, $visiteurSaisi);
+    $existeFicheFrais = $bdd->existeFicheFrais($moisValid, $visiteurValid);
 
     // si elle n'existe pas, on la crée avec les élets frais forfaitisés à 0
     if ( !$existeFicheFrais )
     {
-        ajouterErreur($tabErreurs, "Le mois demandé est invalide");
-        echo "erreur";
+        ajouterErreur($tabErreurs, "Pas de fiche de frais pour ce visiteur ce mois");
     }
     else
     {
         // récupération des données sur la fiche de frais demandée
-        $ficheFrais = $bdd->obtenirDetailFicheFrais($moisSaisi, $visiteurSaisi);
-        $fraisForfait =  $bdd->obtenirReqEltsForfaitFicheFrais($moisSaisi, $visiteurSaisi);
-        $fraisHorsForfait = $bdd->obtenirReqEltsHorsForfaitFicheFrais($moisSaisi, $visiteurSaisi);
+        $ficheFrais = $bdd->obtenirDetailFicheFrais($moisValid, $visiteurValid);
+        $fraisForfait = $bdd->obtenirReqEltsForfaitFicheFrais($moisValid, $visiteurValid);
+        $fraisHorsForfait = $bdd->obtenirReqEltsHorsForfaitFicheFrais($moisValid, $visiteurValid);
 
         $etape = $fraisForfait[0]['quantite'];
         $kilometrage = $fraisForfait[1]['quantite'];
@@ -47,6 +105,8 @@ error_reporting(E_ALL ^ E_DEPRECATED);
         $repas = $fraisForfait[3]['quantite'];
     }
   }
+
+ 
 
 ?>
   <!-- Division principale -->
@@ -66,33 +126,47 @@ error_reporting(E_ALL ^ E_DEPRECATED);
 <div name="droite" style="float:left;width:80%;">
   <div name="haut" style="margin: 2 2 2 2 ;height:10%;float:left;"><h1>Validation des Frais</h1></div>  
   <div name="bas" style="margin : 10 2 2 2;clear:left;background-color:EE8844;color:white;height:88%;">
-    <h1> Validation des frais par visiteur </h1>
-    <form name="formChooseVisiteur" method="post">
+    <h1 class="black"> Validation des frais par visiteur </h1>
+
+    <form name="formValidFrais" method="post" >
+   <!--  <form name="formChooseVisiteur" method="post"> -->
     
     <label class="titre">Choisir le visiteur :</label> 
     <select name="visiteur" class="zone">*
     <?php foreach($visiteurs as $item): ?>
-      <option value="<?=$item['id']?>" <?= (isset($visiteurSaisi) && $visiteurSaisi == $item['id'])? 'selected="selected"' : '';?>><?=$item['nom']?></option>
+      <option value="<?=$item['id']?>" <?= (isset($visiteurValid) && $visiteurValid == $item['id'])? 'selected="selected"' : '';?>><?=$item['nom']?></option>
     <?php endforeach; ?>
     </select>  
 
     <label class="titre">Mois :</label>
     <select name="mois" class="zone">
-        <?php foreach($mois as $item):?>
-        <?php 
-            $mois = $item["mois"];
-            $noMois = intval(substr($mois, 4, 2));
-            $annee = intval(substr($mois, 0, 4));
-        ?>
-          <option value="<?php echo $mois; ?>" <?= (isset($moisSaisi) && $moisSaisi == $mois)? 'selected="selected"' : '';?>><?php echo obtenirLibelleMois($noMois) ." ". $annee; ?></option>
-        <?php endforeach;?>
+      <?php foreach($mois as $item):?>
+      <?php 
+          $mois = $item["mois"];
+          $noMois = intval(substr($mois, 4, 2));
+          $annee = intval(substr($mois, 0, 4));
+      ?>
+        <option value="<?php echo $mois; ?>" <?= (isset($moisValid) && $moisValid == $mois)? 'selected="selected"' : '';?>><?php echo obtenirLibelleMois($noMois) ." ". $annee; ?></option>
+      <?php endforeach;?>
     </select>
 
-    <input type="submit" name="submit" value="valider">
-    </form>
+    <input type="submit" name="submit" value="Valider">
+
+    <?php if(count($tabErreurs) > 0): ?>
+    <div class="error">
+      <ul>
+      <?php foreach($tabErreurs as $item): ?>
+        <li><?= $item ?></li>
+       <?php endforeach; ?>
+      </ul>
+    </div>
+    <?php endif; ?>
+    <!-- </form> -->
+
+    <?php if( (isset($ficheFrais) AND !empty($ficheFrais) ) AND ( isset($fraisForfait) AND !empty($fraisForfait) )): ?>
 
     <p class="titre" />
-    <form name="formValidFrais" method="post" action="enregValidFrais.php">
+    
     <div style="clear:left;"><h2>Frais au forfait </h2></div>
     <table style="color:white;" border="1">
       <tr>
@@ -117,9 +191,9 @@ error_reporting(E_ALL ^ E_DEPRECATED);
         </td>
         <td width="80"> 
           <select size="3" name="situ">
-            <option value="E">Enregistré</option>
-            <option value="V">Validé</option>
-            <option value="R">Remboursé</option>
+            <option value="CR">Enregistré</option>
+            <option value="VA">Validé</option>
+            <option value="RB">Remboursé</option>
           </select></td>
         </tr>
     </table>
@@ -137,21 +211,19 @@ error_reporting(E_ALL ^ E_DEPRECATED);
       </tr>
       <?php foreach($fraisHorsForfait as $item): ?>
         <tr align="center">
-          <input type="hidden" name="idhf" value="<?=$item['date'];?>"/>
           <td width="100" >
-            <input type="text" size="12" name="hfDate" value="<?=$item['date'];?>"/>
+            <p class="zone black"><?= $item['date'];?></p>
           </td>
           <td width="220">
-            <input type="text" size="30" name="hfLib" value="<?= $item['libelle'];?>"/>
+            <p class="zone black"><?= $item['libelle'];?></p>
           </td> 
           <td width="90"> 
-            <input type="text" size="10" name="hfMont" value="<?= $item['montant'];?>"/>
+            <p class="zone black"><?= $item['montant'];?></p>
           </td>
           <td width="80"> 
-            <select size="3" name="hfSitu">
-              <option value="E">Enregistré</option>
-              <option value="V">Validé</option>
-              <option value="R">Remboursé</option>
+            <select size="3" name="<?="hf"."-".$item['id']?>">
+              <option value="valid">Validé</option>
+              <option value="suppr">Supression</option>
             </select>
           </td>
         </tr>
@@ -159,9 +231,15 @@ error_reporting(E_ALL ^ E_DEPRECATED);
 
     </table>    
     <p class="titre"></p>
-    <div class="titre">Nb Justificatifs</div>
-    <input type="text" class="zone" size="4" name="hcMontant" value="<?=$ficheFrais['nbJustificatifs']?>"/>    
-    <p class="titre" /><label class="titre">&nbsp;</label><input class="zone"type="reset" /><input class="zone"type="submit" />
+    <div class="titre black">Nb Justificatifs</div>
+    <input type="text" class="zone" size="4" name="hcMontant" value="<?=$ficheFrais['nbJustificatifs']?>"/>
+    <div class="titre black">Montant</div>
+    <p class="zone black"><?= $ficheFrais['montantValide']; ?></p>   
+    <p class="titre" />
+    <label class="titre">&nbsp;</label>
+    <input class="zone" type="reset" />
+    <input class="zone" type="submit" name="submit" value="Envoyer" />
+  <?php endif; ?>
   </form>
   </div>
 </div>

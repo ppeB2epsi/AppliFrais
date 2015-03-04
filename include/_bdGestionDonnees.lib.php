@@ -421,7 +421,7 @@ class Bdd
 
     }
 
-    public function  obtenirMoisFicheFrais()
+    public function obtenirMoisFicheFrais()
     {
 
         $sql = "SELECT DISTINCT mois FROM fichefrais";
@@ -429,6 +429,15 @@ class Bdd
         $req->execute();
         $result = $req->fetchAll();
         return $result;
+    }
+
+    public function refuserHorsForfait($id)
+    {
+        $tab = array(
+            'id' => $id
+            );
+        $req = $this->connexion->prepare("UPDATE LigneFraisHorsForfait SET libelle = CONCAT('REFUSE: ', libelle) WHERE id = :id");
+        $req->execute($tab);
     }
 
 }
