@@ -88,17 +88,17 @@ error_reporting(E_ALL ^ E_DEPRECATED);
         <th>Situation</th>
       </tr>
       <tr align="center">
-        <td width="80" > 
-          <input type="text" size="3" name="repas" value="<?=$repas?>"/>
+        <td width="80" >
+          <p><?=$repas?></p>
         </td>
         <td width="80"> 
-          <input type="text" size="3" name="nuitee" value="<?=$nuitee;?>"/>
+          <p><?=$nuitee;?></p>
         </td> 
         <td width="80"> 
-          <input type="text" size="3" name="etape" value="<?=$etape;?>"/>
+          <p><?=$etape;?></p>
         </td>
         <td width="80"> 
-          <input type="text" size="3" name="km" value="<?=$kilometrage;?>"/>
+          <p><?=$kilometrage;?></p>
         </td>
         <td width="80"> 
           <select size="3" name="situ">
