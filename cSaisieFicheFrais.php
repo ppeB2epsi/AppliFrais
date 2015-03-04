@@ -21,34 +21,7 @@
   // vérification de l'existence de la fiche de frais pour ce mois courant
   $existeFicheFrais = $bdd->existeFicheFrais($mois, obtenirIdUserConnecte());
   // si elle n'existe pas, on la crée avec les élets frais forfaitisés à 0
-  $result = $bdd->obtenirfraisforfait();
-var_dump($result);
-$lignefraisforfait = $bdd->obtenirLignesFicheFrais('201502', obtenirIdUserConnecte());
-var_dump($lignefraisforfait);
-$user = $bdd->obtenirDetailVisiteur(obtenirIdUserConnecte());
-$vehicule = $bdd->obtenirDetailVehicule($user['idVehicule']);
-foreach ($lignefraisforfait as $lignes)
-{foreach ($result as $ligne){
 
-    if ($lignes['idFraisForfait'] == 'ETP' AND $ligne['id'] == 'ETP')
-    {
-        $etape = $lignes['quantite'] * $ligne['montant'];
-    }
-    else if ($lignes['idFraisForfait'] == 'KM' AND $ligne['id'] == 'KM')
-    {
-        $km = $lignes['quantite'] * $vehicule['prix'];
-    }
-    else if ($lignes['idFraisForfait'] == 'NUI' AND $ligne['id'] == 'NUI')
-    {
-        $nuit = $lignes['quantite'] * $ligne['montant'];
-    }
-    else if ($lignes['idFraisForfait'] == 'REP' AND $ligne['id'] == 'REP')
-    {
-        $repas = $lignes['quantite'] * $ligne['montant'];
-    }
-
-}}$montant = $etape + $km + $nuit + $repas;
-echo $montant;
   if ( !$existeFicheFrais )
   {
       $bdd->ajouterFicheFrais($mois, obtenirIdUserConnecte());
