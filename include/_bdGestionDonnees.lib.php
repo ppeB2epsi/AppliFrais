@@ -171,6 +171,25 @@ class Bdd
         return $result;
     }
 
+    public function existeMontant($unMois, $unIdVisiteur)
+    {
+        $unMois = $this->filtrerChainePourBD($unMois);
+
+        $tab = array(
+
+            'mois' => $unMois,
+            'idVisiteur' => $unIdVisiteur,
+
+        );
+
+        $req = $this->connexion->prepare("SELECT idVisiteur FROM ficheFrais where idVisiteur = :idVisiteur 
+                  AND mois = :mois AND idEtat = 'VA'");
+
+        $req->execute($tab);
+        $result = $req->fetchAll();
+        return $result;
+    }
+
     /**
      * Fournit le mois de la derni�re fiche de frais d'un visiteur.
      * Retourne le mois de la derni�re fiche de frais du visiteur d'id $unIdVisiteur.
@@ -505,6 +524,21 @@ class Bdd
         $req = $this->connexion->prepare($sql);
         $req->execute($tab);
         $result = $req->fetchAll();
+        return $result;
+    }
+
+    public function  suiviMontantTotal($mois, $id)
+    {
+        $tab = array(
+            'id' => $id,
+            'mois' =>$mois
+
+        );
+
+        $sql = "SELECT * FROM fichefrais WHERE idVisiteur= :id AND mois= :mois AND  idEtat = 'VA'";
+        $req = $this->connexion->prepare($sql);
+        $req->execute($tab);
+        $result = $req->fetch();
         return $result;
     }
      public function obtenirDetailVehicule($id)

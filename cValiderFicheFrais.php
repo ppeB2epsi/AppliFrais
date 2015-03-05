@@ -34,7 +34,9 @@ error_reporting(E_ALL ^ E_DEPRECATED);
       $parts = explode('-', $key);
       if($parts[0] === 'hf')
       {
-        $horsForfait[$parts[1]] = $item;
+        $horsForfait[$parts[1]]['situ'] = $item;
+        $horsForfait[$parts[1]]['libelle'] = $parts[2];
+        $horsForfait[$parts[1]]['montant'] = intval($parts[3]);
       }
     }
 
@@ -64,6 +66,7 @@ error_reporting(E_ALL ^ E_DEPRECATED);
         $lignefraisforfait = $bdd->obtenirLignesFicheFrais($moisValid, $visiteurValid);
         $user = $bdd->obtenirDetailVisiteur($visiteurValid);
         $vehicule = $bdd->obtenirDetailVehicule($user['idVehicule']);
+
         foreach ($lignefraisforfait as $lignes)
         {foreach ($result as $ligne){
 
@@ -88,7 +91,19 @@ error_reporting(E_ALL ^ E_DEPRECATED);
                 echo $repas;echo '<br>';
             }
 
-        }}$montant = $etape + $km + $nuit + $repas;
+        }}
+
+        $montantHorsForfait = 0;
+
+        foreach ($horsForfait as $item) 
+        {
+            if($item['situ'] == 'valid')
+            {
+              $montantHorsForfait += $item['montant'];
+            }
+        }
+
+        $montant = $etape + $km + $nuit + $repas + $montantHorsForfait;
         $bdd->modifierMontantFicheFrais($moisValid, $visiteurValid, $montant);
     }
     else
@@ -96,12 +111,11 @@ error_reporting(E_ALL ^ E_DEPRECATED);
       ajouterErreur($tabErreurs, "Les elements de la fiche de frais doivent être renseignés");
     }
 
-    var_dump($horsForfait);
     //Gestion des refus des lignes hors forfaits
     if(isset($horsForfait) AND count($horsForfait) > 0)
     {
       foreach ($horsForfait as $key => $item) {
-        if ($item == 'suppr')
+        if ($item['situ'] == 'suppr' AND !(preg_match("/(REFUSE:)/", $item['libelle'])))
         {
           $bdd->refuserHorsForfait($key);
         }
@@ -137,8 +151,6 @@ error_reporting(E_ALL ^ E_DEPRECATED);
         $repas = $fraisForfait[3]['quantite'];
     }
   }
-
- 
 
 ?>
   <!-- Division principale -->
@@ -218,7 +230,9 @@ error_reporting(E_ALL ^ E_DEPRECATED);
           </select></td>
         </tr>
     </table>
-    
+
+
+    <?php if(count($fraisHorsForfait) > 0): ?> 
     <p class="titre" />
     <div style="clear:left;">
       <h2>Hors Forfait</h2>
@@ -242,7 +256,7 @@ error_reporting(E_ALL ^ E_DEPRECATED);
             <p class="zone black"><?= $item['montant'];?></p>
           </td>
           <td width="80"> 
-            <select size="3" name="<?="hf"."-".$item['id']?>">
+            <select size="3" name="<?="hf"."-".$item['id']."-".$item['libelle']."-".$item['montant'];?>">
               <option value="valid">Validé</option>
               <option value="suppr">Supression</option>
             </select>
@@ -250,7 +264,8 @@ error_reporting(E_ALL ^ E_DEPRECATED);
         </tr>
       <?php endforeach;?>
 
-    </table>    
+    </table>
+  <?php endif; ?>
     <p class="titre"></p>
     <div class="titre black">Nb Justificatifs</div>
     <input type="text" class="zone" size="4" name="hcMontant" value="<?=$ficheFrais['nbJustificatifs']?>"/>

@@ -57,7 +57,7 @@
               <a href="cValiderFicheFrais.php" title="Valider fiche de fraist">Valider fiche frais</a>
            </li>
            <li class="smenu">
-              <a href="cConsultFichesFrais.php" title="Consultation de mes fiches de frais">toujourARajouter</a>
+              <a href="cSuivreFrais.php" title="Suivi fiche frais">Suivi fiche frais</a>
            </li>
          </ul>
         <?php
