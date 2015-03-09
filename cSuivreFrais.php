@@ -23,7 +23,7 @@ error_reporting(E_ALL ^ E_DEPRECATED);
   $error = array();
 
   //Recuperation fiche frais
-  if( isset($data["submit"]) )
+  if( isset($data["submit"]) AND $data['submit'] === "Valider" )
   {
     $visiteurValid = lireDonneePost("visiteur");
     $moisValid = lireDonneePost("mois");
@@ -42,8 +42,18 @@ error_reporting(E_ALL ^ E_DEPRECATED);
         $ficheFrais = $bdd->suiviMontantTotal($moisValid, $visiteurValid);
        
     }
-
-    
+ 
+  }
+  else if( isset($data["submit"]) AND $data['submit'] === "Envoyer" )
+  {
+    if(isset($data['situ']))
+    {
+      $bdd->modifierEtatFicheFrais($data['mois'], $data['visiteur'], $data['situ']);
+    }
+    else
+    {
+      ajouterErreur($tabErreurs, "Veuillez renseigner la situation");
+    }
   }
 ?>
 
@@ -115,6 +125,7 @@ error_reporting(E_ALL ^ E_DEPRECATED);
           </select></td>
         </tr>
     </table>
+    <input type="submit" name="submit" value="Envoyer">
   <?php endif ; ?>
   </form>
   </div>
