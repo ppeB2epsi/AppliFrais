@@ -72,8 +72,7 @@
         <input id="ok" name="cmd_ok" type="submit" value="Valider" size="20"
                title="Demandez à consulter cette fiche de frais" />
         <input id="annuler" name="br_annuler" type="reset" value="Effacer" size="20" />
-          <a href="pdf.php">PDF</a>
-      </p> 
+          <?php echo'<a href="pdf.php?moischoisi='.$moisSaisi.'">PDF</a> ';?>      </p> 
       </div>
         
       </form>
