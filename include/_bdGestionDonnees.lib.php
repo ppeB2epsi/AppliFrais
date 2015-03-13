@@ -592,12 +592,12 @@ class Bdd
 
 
     }
-    public function donnefichehorsfrais($moisChoisi)
+    public function donnefichehorsfrais($moisChoisi, $idetat)
     {
         $idsession = $_SESSION['idUser'];
 
-        $tab=array('idsession'=> $idsession ,'idmois' => $moisChoisi);
-        $sql = "SELECT * FROM lignefraishorsforfait WHERE idVisiteur=:idsession AND mois=:idmois ";
+        $tab=array('idsession'=> $idsession ,'idmois' => $moisChoisi,'idetat' => $idetat);
+        $sql = "SELECT * FROM lignefraishorsforfait WHERE idVisiteur=:idsession AND mois=:idmois AND etat=:idetat";
         $req = $this->connexion->prepare($sql);
         $req->execute($tab);
         $result = $req->fetchall();
@@ -629,5 +629,19 @@ class Bdd
         $req = $this->connexion->prepare($sql);
         $req->execute($tab);
     }
+    public function donneetat($moisChoisi)
+    {
+        $idsession = $_SESSION['idUser'];
+
+        $tab=array('idsession'=> $idsession,'idmois' => $moisChoisi);
+        $sql = "SELECT montantValide FROM fichefrais WHERE idVisiteur=:idsession AND mois=:idmois ";
+        $req = $this->connexion->prepare($sql);
+        $req->execute($tab);
+        $result = $req->fetch();
+        return $result;
+
+
+    }
+
 }
 ?>
