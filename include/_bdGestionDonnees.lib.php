@@ -602,8 +602,32 @@ class Bdd
         $req->execute($tab);
         $result = $req->fetchall();
         return $result;
+    }
 
+    public function reporteHorsForfait($mois, $visiteur)
+    {
+        $partMois = intval(substr($mois, 4, 2));
+        $partAnnee = intval(substr($mois, 0, 4));
 
+        if($partMois == 12)
+        {
+            $partAnnee += 1;
+            $partMois = 01;
+        }
+        else { $partMois += 1; }
+        if($partMois < 10) { $partMois = "0".(string)$partMois; }
+
+        $newMois = (string)$partAnnee.(string)$partMois;
+
+        $tab = array(
+            'mois'     => $mois,
+            'visiteur' => $visiteur,
+            'newMois'  => $newMois,
+        );
+
+        $sql = 'UPDATE LigneFraisHorsForfait SET mois = :newMois WHERE idVisiteur = :visiteur AND mois = :mois AND etat IS NULL ';
+        $req = $this->connexion->prepare($sql);
+        $req->execute($tab);
     }
 }
 ?>

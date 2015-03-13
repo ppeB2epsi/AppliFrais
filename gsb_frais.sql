@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Client :  127.0.0.1
--- Généré le :  Ven 13 Mars 2015 à 15:30
+-- Généré le :  Ven 13 Mars 2015 à 16:54
 -- Version du serveur :  5.6.17
 -- Version de PHP :  5.5.12
 
@@ -164,7 +164,7 @@ CREATE TABLE IF NOT EXISTS `lignefraishorsforfait` (
   `montant` decimal(10,2) DEFAULT NULL,
   `etat` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idVisiteur` (`idVisiteur`,`mois`)
+  KEY `idVisiteur` (`idVisiteur`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
 
 --
@@ -172,9 +172,9 @@ CREATE TABLE IF NOT EXISTS `lignefraishorsforfait` (
 --
 
 INSERT INTO `lignefraishorsforfait` (`id`, `idVisiteur`, `mois`, `libelle`, `date`, `montant`, `etat`) VALUES
-(2, 'a131', '201503', 'REFUSE: test', '2014-06-04', '300.00', 'Refuse'),
-(3, 'a131', '201503', 'REFUSE: testamer', '2014-06-04', '400.00', 'Refuse'),
-(4, 'a131', '201503', 'REFUSE: hello', '2014-12-05', '400.00', 'Refuse');
+(2, 'a131', '201504', 'REFUSE: test', '2014-06-04', '1000.00', NULL),
+(3, 'a131', '201504', 'REFUSE: testamer', '2014-06-04', '1000.00', NULL),
+(4, 'a131', '201503', 'REFUSE: hello', '2014-12-05', '1000.00', 'Refuse');
 
 -- --------------------------------------------------------
 
@@ -261,8 +261,8 @@ INSERT INTO `visiteur` (`id`, `nom`, `prenom`, `login`, `mdp`, `adresse`, `cp`, 
 -- Contraintes pour la table `fichefrais`
 --
 ALTER TABLE `fichefrais`
-  ADD CONSTRAINT `fichefrais_ibfk_1` FOREIGN KEY (`idEtat`) REFERENCES `etat` (`id`),
-  ADD CONSTRAINT `fichefrais_ibfk_2` FOREIGN KEY (`idVisiteur`) REFERENCES `visiteur` (`id`);
+  ADD CONSTRAINT `fichefrais_ibfk_2` FOREIGN KEY (`idVisiteur`) REFERENCES `visiteur` (`id`) ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fichefrais_ibfk_1` FOREIGN KEY (`idEtat`) REFERENCES `etat` (`id`);
 
 --
 -- Contraintes pour la table `lignefraisforfait`
@@ -275,7 +275,7 @@ ALTER TABLE `lignefraisforfait`
 -- Contraintes pour la table `lignefraishorsforfait`
 --
 ALTER TABLE `lignefraishorsforfait`
-  ADD CONSTRAINT `lignefraishorsforfait_ibfk_1` FOREIGN KEY (`idVisiteur`, `mois`) REFERENCES `fichefrais` (`idVisiteur`, `mois`);
+  ADD CONSTRAINT `lignefraishorsforfait_ibfk_1` FOREIGN KEY (`idVisiteur`) REFERENCES `fichefrais` (`idVisiteur`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Contraintes pour la table `visiteur`

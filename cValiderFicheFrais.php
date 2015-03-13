@@ -16,6 +16,8 @@ error_reporting(E_ALL ^ E_DEPRECATED);
   require($repInclude . "_entete.inc.html");
   require($repInclude . "_sommaire.inc.php");
 
+    $day = intval(date("d"));
+
   $visiteurs = $bdd->obtenirvisiteur();
   $mois = $bdd->obtenirMoisFicheFrais();
   
@@ -93,7 +95,7 @@ error_reporting(E_ALL ^ E_DEPRECATED);
 
         foreach ($horsForfait as $item) 
         {
-            if($item['situ'] == 'valid')
+            if($item['situ'] == 'Valide')
             {
               $montantHorsForfait += $item['montant'];
             }
@@ -140,6 +142,15 @@ error_reporting(E_ALL ^ E_DEPRECATED);
         // récupération des données sur la fiche de frais demandée
         $ficheFrais = $bdd->obtenirDetailFicheFrais($moisValid, $visiteurValid);
         $fraisForfait = $bdd->obtenirReqEltsForfaitFicheFrais($moisValid, $visiteurValid);
+
+        //report des fichers frais si le jour est superieur au 10;
+        $day = intval(date("d"));
+
+        if($day > 10)
+        {
+            $bdd->reporteHorsForfait($moisValid, $visiteurValid);
+        }
+
         $fraisHorsForfait = $bdd->obtenirReqEltsHorsForfaitFicheFrais($moisValid, $visiteurValid);
 
         $etape = $fraisForfait[0]['quantite'];
@@ -255,7 +266,7 @@ error_reporting(E_ALL ^ E_DEPRECATED);
           <td width="80"> 
             <select size="3" name="<?="hf"."-".$item['id']."-".$item['libelle']."-".$item['montant'];?>">
               <option value="Valide">Validé</option>
-              <option value="Refuse">Supression</option>
+              <option value="Refuse">Refusé</option>
             </select>
           </td>
         </tr>
