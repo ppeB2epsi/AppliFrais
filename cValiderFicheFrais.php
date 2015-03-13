@@ -114,11 +114,12 @@ error_reporting(E_ALL ^ E_DEPRECATED);
     //Gestion des refus des lignes hors forfaits
     if(isset($horsForfait) AND count($horsForfait) > 0)
     {
-      foreach ($horsForfait as $key => $item) {
-        if ($item['situ'] == 'suppr' AND !(preg_match("/(REFUSE:)/", $item['libelle'])))
-        {
-          $bdd->refuserHorsForfait($key);
-        }
+      foreach ($horsForfait as $key => $item)
+      {
+          if(isset($item['situ']) AND isset($item['libelle']))
+          {
+              $bdd->modifierHorsForfait($key, $item['situ'], $item['libelle']);
+          }
       }
     }
    
@@ -257,8 +258,8 @@ error_reporting(E_ALL ^ E_DEPRECATED);
           </td>
           <td width="80"> 
             <select size="3" name="<?="hf"."-".$item['id']."-".$item['libelle']."-".$item['montant'];?>">
-              <option value="valid">Validé</option>
-              <option value="suppr">Supression</option>
+              <option value="Valide">Validé</option>
+              <option value="Refuse">Supression</option>
             </select>
           </td>
         </tr>

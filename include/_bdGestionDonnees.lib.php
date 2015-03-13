@@ -493,13 +493,26 @@ class Bdd
         return $result;
     }
 
-    public function refuserHorsForfait($id)
+    public function modifierHorsForfait($id, $etat, $lib)
     {
-        $tab = array(
-            'id'=> $id
+        $tabId = array(
+            'id'    => $id,
             );
-        $req = $this->connexion->prepare('UPDATE LigneFraisHorsForfait SET libelle = CONCAT("REFUSE: ", libelle )WHERE id = :id');
-        $req ->execute($tab);   
+
+        $tab = array(
+            'id' => $id,
+            'etat' => $etat,
+        );
+
+        if ($etat == 'Refuse' AND !(preg_match("/(REFUSE:)/", $lib)))
+        {
+            $req = $this->connexion->prepare('UPDATE LigneFraisHorsForfait SET libelle = CONCAT("REFUSE: ", libelle )WHERE id = :id');
+            $req ->execute($tabId);
+        }
+
+        $sql =  $this->connexion->prepare('UPDATE  LigneFraisHorsForfait SET etat = :etat WHERE id = :id ');
+        $sql->execute($tab);
+
     }
 
 
