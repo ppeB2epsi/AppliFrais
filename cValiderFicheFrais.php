@@ -92,15 +92,13 @@ error_reporting(E_ALL ^ E_DEPRECATED);
         }}
 
         $montantHorsForfait = 0;
-
-        foreach ($horsForfait as $item) 
-        {
-            if($item['situ'] == 'Valide')
-            {
-              $montantHorsForfait += $item['montant'];
+        if (isset ($horsForfait)) {
+            foreach ($horsForfait as $item) {
+                if ($item['situ'] == 'Valide') {
+                    $montantHorsForfait += $item['montant'];
+                }
             }
         }
-
         $montant = $etape + $km + $nuit + $repas + $montantHorsForfait;
         $bdd->modifierMontantFicheFrais($moisValid, $visiteurValid, $montant);
     }
