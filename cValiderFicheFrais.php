@@ -73,22 +73,18 @@ error_reporting(E_ALL ^ E_DEPRECATED);
             if ($lignes['idFraisForfait'] == 'ETP' AND $ligne['id'] == 'ETP')
             {
                 $etape = $lignes['quantite'] * $ligne['montant'];
-                echo $etape;echo '<br>';
             }
             else if ($lignes['idFraisForfait'] == 'KM' AND $ligne['id'] == 'KM')
             {
                 $km = $lignes['quantite'] * $vehicule['prix'];
-                echo $km;echo '<br>';
             }
             else if ($lignes['idFraisForfait'] == 'NUI' AND $ligne['id'] == 'NUI')
             {
                 $nuit = $lignes['quantite'] * $ligne['montant'];
-                echo $nuit;echo '<br>';
             }
             else if ($lignes['idFraisForfait'] == 'REP' AND $ligne['id'] == 'REP')
             {
                 $repas = $lignes['quantite'] * $ligne['montant'];
-                echo $repas;echo '<br>';
             }
 
         }}
