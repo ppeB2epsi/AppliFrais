@@ -7,6 +7,7 @@
   $repInclude = './include/';
   require($repInclude . "_init.inc.php");
 
+
   // page inaccessible si visiteur non connecté
   if ( ! estConnecte() )
   {
@@ -72,9 +73,11 @@
         <input id="ok" name="cmd_ok" type="submit" value="Valider" size="20"
                title="Demandez à consulter cette fiche de frais" />
         <input id="annuler" name="br_annuler" type="reset" value="Effacer" size="20" />
-          <?php echo'<a href="pdf.php?moischoisi='.$moisSaisi.'">PDF</a> ';?>      </p> 
+
+
+
       </div>
-        
+
       </form>
 <?php
 
@@ -157,11 +160,15 @@
                 </tr>
             <?php
             }
+
+
+
   ?>
     </table>
   </div>
 <?php
         }
+        if ($tabFicheFrais["idEtat"]=="RB"){echo'<a href="pdf.php?moischoisi='.$moisSaisi.'">PDF</a> ';}
     }
 ?>    
   </div>
