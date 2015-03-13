@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.1.4
+-- version 4.1.14
 -- http://www.phpmyadmin.net
 --
 -- Client :  127.0.0.1
--- Généré le :  Mar 03 Mars 2015 à 09:52
--- Version du serveur :  5.6.15-log
--- Version de PHP :  5.5.8
+-- Généré le :  Ven 13 Mars 2015 à 15:30
+-- Version du serveur :  5.6.17
+-- Version de PHP :  5.5.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -31,12 +31,19 @@ CREATE TABLE IF NOT EXISTS `comptable` (
   `nom` varchar(30) DEFAULT NULL,
   `prenom` varchar(30) DEFAULT NULL,
   `login` varchar(30) DEFAULT NULL,
-  `mdp` varchar(20) DEFAULT NULL,
+  `mdp` varchar(200) DEFAULT NULL,
   `adresse` varchar(30) DEFAULT NULL,
   `cp` varchar(5) DEFAULT NULL,
   `ville` varchar(30) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+
+--
+-- Contenu de la table `comptable`
+--
+
+INSERT INTO `comptable` (`id`, `nom`, `prenom`, `login`, `mdp`, `adresse`, `cp`, `ville`) VALUES
+(1, 'Marc', 'Jean', 'comptable', '$2y$10$0XQdZtLB2SuHfG/FbAu0HOQ86Obt9XK.IKbJChyhzgUC.fzTfPdNa', '6 rue de champ', '69001', 'Lyon');
 
 -- --------------------------------------------------------
 
@@ -82,8 +89,9 @@ CREATE TABLE IF NOT EXISTS `fichefrais` (
 --
 
 INSERT INTO `fichefrais` (`idVisiteur`, `mois`, `nbJustificatifs`, `montantValide`, `dateModif`, `idEtat`) VALUES
-('a17', '201502', 0, NULL, '2015-03-03', 'CL'),
-('a17', '201503', 0, NULL, '2015-03-03', 'CR');
+('a131', '201503', 0, '4500.00', '2015-03-13', 'CR'),
+('a17', '201502', 0, '771.34', '2015-03-04', 'VA'),
+('a17', '201503', 0, '282.00', '2015-03-04', 'VA');
 
 -- --------------------------------------------------------
 
@@ -128,14 +136,18 @@ CREATE TABLE IF NOT EXISTS `lignefraisforfait` (
 --
 
 INSERT INTO `lignefraisforfait` (`idVisiteur`, `mois`, `idFraisForfait`, `quantite`) VALUES
-('a17', '201502', 'ETP', 0),
-('a17', '201502', 'KM', 0),
-('a17', '201502', 'NUI', 0),
-('a17', '201502', 'REP', 0),
-('a17', '201503', 'ETP', 0),
-('a17', '201503', 'KM', 0),
-('a17', '201503', 'NUI', 0),
-('a17', '201503', 'REP', 0);
+('a131', '201503', 'ETP', 10),
+('a131', '201503', 'KM', 20),
+('a131', '201503', 'NUI', 30),
+('a131', '201503', 'REP', 40),
+('a17', '201502', 'ETP', 4),
+('a17', '201502', 'KM', 2),
+('a17', '201502', 'NUI', 1),
+('a17', '201502', 'REP', 10),
+('a17', '201503', 'ETP', 1),
+('a17', '201503', 'KM', 100),
+('a17', '201503', 'NUI', 1),
+('a17', '201503', 'REP', 1);
 
 -- --------------------------------------------------------
 
@@ -150,9 +162,19 @@ CREATE TABLE IF NOT EXISTS `lignefraishorsforfait` (
   `libelle` varchar(100) DEFAULT NULL,
   `date` date DEFAULT NULL,
   `montant` decimal(10,2) DEFAULT NULL,
+  `etat` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `idVisiteur` (`idVisiteur`,`mois`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
+
+--
+-- Contenu de la table `lignefraishorsforfait`
+--
+
+INSERT INTO `lignefraishorsforfait` (`id`, `idVisiteur`, `mois`, `libelle`, `date`, `montant`, `etat`) VALUES
+(2, 'a131', '201503', 'REFUSE: test', '2014-06-04', '300.00', 'Refuse'),
+(3, 'a131', '201503', 'REFUSE: testamer', '2014-06-04', '400.00', 'Refuse'),
+(4, 'a131', '201503', 'REFUSE: hello', '2014-12-05', '400.00', 'Refuse');
 
 -- --------------------------------------------------------
 
@@ -204,7 +226,7 @@ CREATE TABLE IF NOT EXISTS `visiteur` (
 
 INSERT INTO `visiteur` (`id`, `nom`, `prenom`, `login`, `mdp`, `adresse`, `cp`, `ville`, `dateEmbauche`, `idVehicule`) VALUES
 ('a131', 'Villechalane', 'Louis', 'lvillachane', '$2y$10$VzvM3Ao.HS7PLofYAovvo.fwWHYuaazN.Cbh5F79ERjXdxIBb7lDC', '8 rue des Charmes', '46000', 'Cahors', '2005-12-21', NULL),
-('a17', 'Andre', 'David', 'dandre', '$2y$10$j1GT7E22xF5Rpoblhu3Auuu0dpPvGWtLpY62Nxzm6XUaD0gAMl7wG', '1 rue Petit', '46200', 'Lalbenque', '1998-11-23', NULL),
+('a17', 'Andre', 'David', 'dandre', '$2y$10$j1GT7E22xF5Rpoblhu3Auuu0dpPvGWtLpY62Nxzm6XUaD0gAMl7wG', '1 rue Petit', '46200', 'Lalbenque', '1998-11-23', 4),
 ('a55', 'Bedos', 'Christian', 'cbedos', '$2y$10$97OMXcjyDdfDqjj4WsR.qu3oB//mp1hGIpPAUUps.o4ACqVypqF4u', '1 rue Peranud', '46250', 'Montcuq', '1995-01-12', NULL),
 ('a93', 'Tusseau', 'Louis', 'ltusseau', '$2y$10$RGqxSBERHnl3a0nGVkvIZOWJyjRMT.ELQTYXZl1MDap/6gEfhFO3e', '22 rue des Ternes', '46123', 'Gramat', '2000-05-01', NULL),
 ('b13', 'Bentot', 'Pascal', 'pbentot', '$2y$10$yTnfkCTt0aVFedSjynC6KeCsYwCpBddlOj9SeP5vdL.CBj0iX5wTK', '11 all?e des Cerises', '46512', 'Bessines', '1992-07-09', NULL),
