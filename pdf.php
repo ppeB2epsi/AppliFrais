@@ -35,11 +35,13 @@ $pdf->SetTextColor(0);
 
 
 $row1 = $bdd->donneVisiteur();
+$etat = $bdd->donneetat($_GET['moischoisi']);
+
 $km = $bdd->donnefichefrais($_GET['moischoisi'],'KM');
 $etp =  $bdd->donnefichefrais($_GET['moischoisi'],'ETP');
 $nui =  $bdd->donnefichefrais($_GET['moischoisi'],'NUI');
 $rep =  $bdd->donnefichefrais($_GET['moischoisi'],'REP');
-$horsforfait = $bdd->donnefichehorsfrais($_GET['moischoisi']);
+$horsforfait = $bdd->donnefichehorsfrais($_GET['moischoisi'],'Valide');
 //var_dump($horsforfait);
 // Infos du client calées à droite
 $pdf->Text(120,38,utf8_decode($row1['prenom']).' '.utf8_decode($row1['nom']));
@@ -114,6 +116,7 @@ foreach($horsforfait as $horsforfait)
     $pdf->MultiCell(50,8,$horsforfait['montant'],1,'L');
     $position_detail += 8;
     $i=$i+8;
+    $pdf->Text(8,140,'Montant Total : '.$etat['montantValide'].' €');
 }
 
 entete_table($position_entete);
